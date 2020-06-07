@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/track.dart';
 
 class TrackListView extends StatelessWidget {
-  final Api api;
-
-  TrackListView({this.api});
-
   @override
   Widget build(BuildContext context) {
+    var api = context.repository<Api>();
     return FutureBuilder<List<TrackModel>>(
       future: api.fetchTracks(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return TrackList(
             tracks: snapshot.data,
-            api: api,
           );
         } else if (snapshot.hasError) {
           print(snapshot.error);
@@ -30,9 +27,8 @@ class TrackListView extends StatelessWidget {
 
 class TrackList extends StatelessWidget {
   final List<TrackModel> tracks;
-  final Api api;
 
-  TrackList({this.tracks, this.api});
+  TrackList({this.tracks});
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +36,8 @@ class TrackList extends StatelessWidget {
       children: this
           .tracks
           .map<Widget>((a) => TrackListItem(
-        api: api,
-        track: a,
-      ))
+                track: a,
+              ))
           .toList(),
     );
   }
@@ -50,12 +45,12 @@ class TrackList extends StatelessWidget {
 
 class TrackListItem extends StatelessWidget {
   final TrackModel track;
-  final Api api;
 
-  TrackListItem({this.track, this.api});
+  TrackListItem({this.track});
 
   @override
   Widget build(BuildContext context) {
+    var api = context.repository<Api>();
     return ListTile(
       title: Text(track.title),
       leading: CircleAvatar(child: api.fetchCoverart(track)),

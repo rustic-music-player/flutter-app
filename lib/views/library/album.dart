@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
 
 class AlbumListView extends StatelessWidget {
-  final Api api;
-
-  AlbumListView({this.api});
-
   @override
   Widget build(BuildContext context) {
+    var api = context.repository<Api>();
     return FutureBuilder<List<AlbumModel>>(
       future: api.fetchAlbums(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return AlbumList(
-            albums: snapshot.data,
-            api: api,
-          );
+          return AlbumList(albums: snapshot.data);
         } else if (snapshot.hasError) {
           print(snapshot.error);
           return Text("${snapshot.error}");
@@ -30,9 +25,8 @@ class AlbumListView extends StatelessWidget {
 
 class AlbumList extends StatelessWidget {
   final List<AlbumModel> albums;
-  final Api api;
 
-  AlbumList({this.albums, this.api});
+  AlbumList({this.albums});
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +34,8 @@ class AlbumList extends StatelessWidget {
       children: this
           .albums
           .map<Widget>((a) => AlbumListItem(
-        api: api,
-        album: a,
-      ))
+                album: a,
+              ))
           .toList(),
     );
   }
@@ -50,12 +43,12 @@ class AlbumList extends StatelessWidget {
 
 class AlbumListItem extends StatelessWidget {
   final AlbumModel album;
-  final Api api;
 
-  AlbumListItem({this.album, this.api});
+  AlbumListItem({this.album});
 
   @override
   Widget build(BuildContext context) {
+    var api = context.repository<Api>();
     return ListTile(
       title: Text(album.title),
       leading: CircleAvatar(child: api.fetchAlbumCoverart(album)),

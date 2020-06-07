@@ -1,15 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/search.dart';
+import 'package:rustic/views/search/search_bloc.dart';
 
 class SearchView extends StatefulWidget {
-  final Api api;
-
-  SearchView({this.api});
-
   @override
   _SearchViewState createState() {
     return new _SearchViewState();
@@ -17,14 +15,8 @@ class SearchView extends StatefulWidget {
 }
 
 class _SearchViewState extends State<SearchView> {
-  Stream<SearchResultModel> searchResultStream;
   final searchStreamController = new StreamController<String>();
   final searchController = new TextEditingController();
-
-  _SearchViewState() {
-    searchResultStream = searchStreamController.stream
-        .asyncMap((query) => widget.api.search(query));
-  }
 
   @override
   void dispose() {
@@ -35,6 +27,8 @@ class _SearchViewState extends State<SearchView> {
 
   @override
   Widget build(BuildContext context) {
+    var bloc = context.bloc<SearchBloc>();
+
     return Scaffold(
         appBar: AppBar(
           title: TextField(
@@ -42,50 +36,37 @@ class _SearchViewState extends State<SearchView> {
             autofocus: true,
             decoration: InputDecoration(hintText: 'Search...'),
             textInputAction: TextInputAction.search,
-            onChanged: search,
+            onChanged: (String query) => search(query, bloc),
           ),
         ),
-        body: StreamBuilder<SearchResultModel>(
-            stream: searchResultStream,
-            builder: (BuildContext context,
-                AsyncSnapshot<SearchResultModel> snapshot) {
-              if (snapshot.hasData) {
-                return SearchResultView(
-                    results: snapshot.data, api: widget.api);
-              } else if (snapshot.hasError) {
-                print(snapshot.error);
-                return Text("${snapshot.error}");
-              }
-
-              return CircularProgressIndicator();
+        body: BlocBuilder(
+            bloc: bloc,
+            builder: (BuildContext context, SearchResultModel state) {
+              return SearchResultView(results: state);
             }));
   }
 
-  void search(String value) {
-    searchStreamController.add(value);
+  void search(String query, SearchBloc bloc) {
+    searchStreamController.add(query);
+    bloc.add(query);
   }
 }
 
 class SearchResultView extends StatelessWidget {
   final SearchResultModel results;
-  final Api api;
 
-  SearchResultView({this.results, this.api});
+  SearchResultView({this.results});
 
   @override
   Widget build(BuildContext context) {
-    return SearchAlbumView(
-      albums: results.albums,
-      api: api,
-    );
+    return SearchAlbumView(albums: results.albums);
   }
 }
 
 class SearchAlbumView extends StatelessWidget {
   final List<AlbumModel> albums;
-  final Api api;
 
-  SearchAlbumView({this.albums, this.api});
+  SearchAlbumView({this.albums});
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +76,6 @@ class SearchAlbumView extends StatelessWidget {
           .albums
           .map((album) => SearchAlbumEntry(
                 album: album,
-                api: api,
               ))
           .toList(),
     );
@@ -104,12 +84,12 @@ class SearchAlbumView extends StatelessWidget {
 
 class SearchAlbumEntry extends StatelessWidget {
   final AlbumModel album;
-  final Api api;
 
-  SearchAlbumEntry({this.album, this.api});
+  SearchAlbumEntry({this.album});
 
   @override
   Widget build(BuildContext context) {
+    var api = context.repository<Api>();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -122,10 +102,7 @@ class SearchAlbumEntry extends StatelessWidget {
               padding: const EdgeInsets.all(4.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(album.title),
-                  Text(album.artist.name)
-                ],
+                children: <Widget>[Text(album.title), Text(album.artist.name)],
               ),
             )
           ],

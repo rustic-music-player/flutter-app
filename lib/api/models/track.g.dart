@@ -8,22 +8,27 @@ part of 'track.dart';
 
 TrackModel _$TrackModelFromJson(Map<String, dynamic> json) {
   return TrackModel(
-      id: json['id'] as int,
-      title: json['title'] as String,
-      stream_url: json['stream_url'] as String,
-      uri: json['uri'] as String,
-      provider: json['provider'] as String,
-      coverart: json['coverart'] as String,
-      duration: json['duration'] as int);
+    title: json['title'] as String,
+    cursor: json['cursor'] as String,
+    provider: json['provider'] as String,
+    coverart: json['coverart'] as String,
+    duration: json['duration'] as int,
+    artist: json['artist'] == null
+        ? null
+        : ArtistModel.fromJson(json['artist'] as Map<String, dynamic>),
+    album: json['album'] == null
+        ? null
+        : AlbumModel.fromJson(json['album'] as Map<String, dynamic>),
+  );
 }
 
 Map<String, dynamic> _$TrackModelToJson(TrackModel instance) =>
     <String, dynamic>{
-      'id': instance.id,
       'title': instance.title,
-      'stream_url': instance.stream_url,
-      'uri': instance.uri,
+      'cursor': instance.cursor,
       'provider': instance.provider,
       'coverart': instance.coverart,
-      'duration': instance.duration
+      'album': instance.album,
+      'artist': instance.artist,
+      'duration': instance.duration,
     };

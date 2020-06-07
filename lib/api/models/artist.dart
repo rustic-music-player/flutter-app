@@ -4,12 +4,11 @@ part 'artist.g.dart';
 
 @JsonSerializable()
 class ArtistModel {
-  final int id;
+  final String cursor;
   final String name;
-  final String uri;
   final String image;
 
-  ArtistModel({this.id, this.name, this.image, this.uri});
+  ArtistModel({this.cursor, this.name, this.image});
 
   factory ArtistModel.fromJson(Map<String, dynamic> json) =>
       _$ArtistModelFromJson(json);

@@ -1,17 +1,19 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:rustic/api/models/artist.dart';
+import 'package:rustic/api/models/track.dart';
 
 part 'album.g.dart';
 
 @JsonSerializable()
 class AlbumModel {
-  final int id;
   final String title;
   final String coverart;
-  final String uri;
+  final String cursor;
   final ArtistModel artist;
+  final List<TrackModel> tracks;
 
-  AlbumModel({this.id, this.title, this.coverart, this.uri, this.artist});
+  AlbumModel(
+      {this.cursor, this.title, this.coverart, this.tracks, this.artist});
 
   factory AlbumModel.fromJson(Map<String, dynamic> json) =>
       _$AlbumModelFromJson(json);

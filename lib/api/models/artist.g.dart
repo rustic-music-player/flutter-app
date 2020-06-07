@@ -8,16 +8,15 @@ part of 'artist.dart';
 
 ArtistModel _$ArtistModelFromJson(Map<String, dynamic> json) {
   return ArtistModel(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      image: json['image'] as String,
-      uri: json['uri'] as String);
+    cursor: json['cursor'] as String,
+    name: json['name'] as String,
+    image: json['image'] as String,
+  );
 }
 
 Map<String, dynamic> _$ArtistModelToJson(ArtistModel instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'cursor': instance.cursor,
       'name': instance.name,
-      'uri': instance.uri,
-      'image': instance.image
+      'image': instance.image,
     };

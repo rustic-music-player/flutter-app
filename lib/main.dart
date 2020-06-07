@@ -1,24 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rustic/api/api.dart';
 import 'package:rustic/api/http.dart';
+import 'package:rustic/media_bloc.dart';
+import 'package:rustic/notifications.dart';
 import 'package:rustic/views/library/library.dart';
+import 'package:rustic/views/playlists/playlists.dart';
 import 'package:rustic/views/search/search.dart';
+import 'package:rustic/views/search/search_bloc.dart';
 
-void main() => runApp(MyApp());
+// TODO: get from config
+const apiHost = '192.168.1.13:8080';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var notificationsService = NotificationsService(host: apiHost);
+  await notificationsService.setup();
+  runApp(MyApp(
+    notificationsService: notificationsService,
+  ));
+}
 
 class MyApp extends StatelessWidget {
+  final NotificationsService notificationsService;
+  final CurrentMediaBloc mediaBloc;
+
+  MyApp({this.mediaBloc, this.notificationsService});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    var api = new HttpApi(baseUrl: 'http://192.168.1.13:8080'); // TODO: get from config
-    return MaterialApp(
-      title: 'Rustic',
-      theme: ThemeData(
-          primarySwatch: Colors.blueGrey, accentColor: Colors.deepOrangeAccent, visualDensity: VisualDensity.adaptivePlatformDensity),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => LibraryView(api: api),
-        '/search': (context) => SearchView(api: api)
-      },
-    );
+    return RepositoryProvider<Api>(
+        create: (context) => HttpApi(baseUrl: '$apiHost'),
+        child: MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (BuildContext context) =>
+                    SearchBloc(api: context.repository()),
+              ),
+              BlocProvider(
+                  create: (BuildContext context) =>
+                      CurrentMediaBloc(api: context.repository()))
+            ],
+            child: BlocListener<CurrentMediaBloc, Playing>(
+              listener: (context, state) {
+                this.notificationsService.showNotification(state);
+              },
+              child: MaterialApp(
+                title: 'Rustic',
+                theme: ThemeData(
+                    primarySwatch: Colors.blueGrey,
+                    accentColor: Colors.deepOrangeAccent,
+                    visualDensity: VisualDensity.adaptivePlatformDensity),
+                initialRoute: '/',
+                routes: {
+                  Navigator.defaultRouteName: (context) => LibraryView(),
+                  '/playlists': (context) => PlaylistsView(),
+                  '/search': (context) => SearchView()
+                },
+              ),
+            )));
   }
 }

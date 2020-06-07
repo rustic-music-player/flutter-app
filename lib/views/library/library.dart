@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:rustic/api/api.dart';
+import 'package:rustic/ui/drawer.dart';
+import 'package:rustic/ui/player.dart';
 import 'package:rustic/views/library/album.dart';
 import 'package:rustic/views/library/artist.dart';
 import 'package:rustic/views/library/track.dart';
 
 class LibraryView extends StatefulWidget {
-  final Api api;
-
-  LibraryView({this.api});
-
   @override
   LibraryViewState createState() {
     return new LibraryViewState();
@@ -23,8 +20,9 @@ class LibraryViewState extends State<LibraryView> {
     return DefaultTabController(
         length: 3,
         child: Scaffold(
+          drawer: RusticDrawer(),
           appBar: AppBar(
-            title: Text('Rustic - Library'),
+            title: Text('Library'),
             bottom: TabBar(tabs: [
               Tab(
                 text: 'Albums',
@@ -44,17 +42,17 @@ class LibraryViewState extends State<LibraryView> {
               )
             ],
           ),
-          body: TabBarView(children: [
-            AlbumListView(
-              api: widget.api,
-            ),
-            ArtistListView(
-              api: widget.api,
-            ),
-            TrackListView(
-              api: widget.api,
-            ),
-          ]),
+          body: Column(
+            children: <Widget>[
+              Expanded(
+                  child: TabBarView(children: [
+                AlbumListView(),
+                ArtistListView(),
+                TrackListView(),
+              ])),
+              RusticPlayer()
+            ],
+          ),
         ));
   }
 }
