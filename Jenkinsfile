@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'cirrusci/flutter:stable'
+            image 'adamantium/flutter:latest'
             args '-v /usr/share/jenkins/cache:/build_cache'
         }
     }
@@ -14,6 +14,12 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'flutter build appbundle'
+            }
+
+            post {
+                success {
+                    archiveArtifacts artifacts: 'build/app/outputs/bundle/release/*.aab', fingerprint: true
+                }
             }
         }
     }
