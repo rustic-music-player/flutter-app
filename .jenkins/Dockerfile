@@ -1,3 +1,3 @@
 FROM adamantium/flutter:latest
 
-RUN chmod -R +rwx /opt/flutter
+RUN chmod -R 777 /opt/flutter
