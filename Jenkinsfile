@@ -18,7 +18,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'flutter build appbundle'
+                sh 'flutter build apk'
                 archiveArtifacts artifacts: 'build/app/outputs/bundle/release/*.aab', fingerprint: true
             }
 
