@@ -6,6 +6,10 @@ pipeline {
         }
     }
 
+    triggers {
+        pollSCM('H/30 * * * *')
+    }
+
     environment {
         PUB_CACHE='/build_cache/dart'
     }
