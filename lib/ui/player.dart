@@ -12,6 +12,9 @@ class RusticPlayerBar extends StatelessWidget {
     bloc.add(FetchPlayers);
     return BlocBuilder<CurrentMediaBloc, Playing>(
       builder: (context, state) {
+        if (state.track == null) {
+          return Container();
+        }
         return GestureDetector(
           child: AppBar(
             automaticallyImplyLeading: false,

@@ -4,6 +4,7 @@ import 'package:rustic/api/api.dart';
 import 'package:rustic/api/http.dart';
 import 'package:rustic/media_bloc.dart';
 import 'package:rustic/notifications.dart';
+import 'package:rustic/views/album/album.dart';
 import 'package:rustic/views/library/library.dart';
 import 'package:rustic/views/player.dart';
 import 'package:rustic/views/playlist/playlist.dart';
@@ -60,7 +61,8 @@ class MyApp extends StatelessWidget {
                   PlaylistsView.routeName: (context) => PlaylistsView(),
                   PlaylistView.routeName: (context) => PlaylistView(),
                   SearchView.routeName: (context) => SearchView(),
-                  PlayerView.routeName: (context) => PlayerView()
+                  PlayerView.routeName: (context) => PlayerView(),
+                  AlbumView.routeName: (context) => AlbumView()
                 },
               ),
             )));

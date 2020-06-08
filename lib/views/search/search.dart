@@ -1,56 +1,28 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/search.dart';
+import 'package:rustic/views/album/album.dart';
 import 'package:rustic/views/search/search_bloc.dart';
 
-class SearchView extends StatefulWidget {
+class SearchView extends StatelessWidget {
   static const routeName = '/search';
 
   @override
-  _SearchViewState createState() {
-    return new _SearchViewState();
-  }
-}
-
-class _SearchViewState extends State<SearchView> {
-  final searchStreamController = new StreamController<String>();
-  final searchController = new TextEditingController();
-
-  @override
-  void dispose() {
-    searchStreamController.close();
-    searchController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    var bloc = context.bloc<SearchBloc>();
-
-    return Scaffold(
-        appBar: AppBar(
-          title: TextField(
-            controller: searchController,
-            autofocus: true,
-            decoration: InputDecoration(hintText: 'Search...'),
-            textInputAction: TextInputAction.search,
-            onChanged: (String query) => search(query, bloc),
-          ),
-        ),
-        body: BlocBuilder(
-            bloc: bloc,
-            builder: (BuildContext context, SearchResultModel state) {
-              return SearchResultView(results: state);
-            }));
-  }
-
-  void search(String query, SearchBloc bloc) {
-    searchStreamController.add(query);
-    bloc.add(query);
+    return BlocBuilder<SearchBloc, SearchResultModel>(
+        builder: (context, state) => Scaffold(
+            appBar: AppBar(
+              title: TextField(
+                autofocus: true,
+                decoration: InputDecoration(hintText: 'Search...'),
+                textInputAction: TextInputAction.search,
+                onChanged: (String query) =>
+                    context.bloc<SearchBloc>().add(query),
+              ),
+            ),
+            body: SearchResultView(results: state)));
   }
 }
 
@@ -61,7 +33,42 @@ class SearchResultView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SearchAlbumView(albums: results.albums);
+    var widgets = <Widget>[];
+    addAlbumList(widgets);
+    return ListView(
+      scrollDirection: Axis.vertical,
+      children: widgets,
+    );
+  }
+
+  void addAlbumList(List<Widget> widgets) {
+    if (results.albums.length > 0) {
+      widgets.add(SearchHeader("Albums"));
+      widgets.add(SearchAlbumView(
+        albums: results.albums,
+      ));
+    }
+  }
+}
+
+class SearchHeader extends StatelessWidget {
+  final String title;
+
+  SearchHeader(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        children: <Widget>[
+          Expanded(child: Text(this.title)),
+          RaisedButton(
+            child: Text("Expand"),
+          )
+        ],
+      ),
+    );
   }
 }
 
@@ -72,10 +79,11 @@ class SearchAlbumView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      scrollDirection: Axis.horizontal,
+    return Wrap(
+      direction: Axis.horizontal,
       children: this
           .albums
+          .sublist(0, 4)
           .map((album) => SearchAlbumEntry(
                 album: album,
               ))
@@ -92,24 +100,33 @@ class SearchAlbumEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var api = context.repository<Api>();
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        child: Column(
-          children: <Widget>[
-            album.coverart == null
-                ? Icon(Icons.album)
-                : Image(image: api.fetchCoverart(album.coverart)),
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[Text(album.title), Text(album.artist.name)],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
+    return FractionallySizedBox(
+        widthFactor: .5,
+        child: Card(
+          child: FlatButton(
+            padding: const EdgeInsets.all(0),
+            onPressed: () => Navigator.pushNamed(context, AlbumView.routeName,
+                arguments: AlbumViewArguments(this.album)),
+            child: Column(
+              children: <Widget>[
+                album.coverart == null
+                    ? Icon(Icons.album)
+                    : Image(
+                        image: api.fetchCoverart(album.coverart),
+                      ),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(album.title),
+                      Text(album.artist.name)
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ));
   }
 }
