@@ -19,7 +19,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'flutter build apk'
-                archiveArtifacts artifacts: 'build/app/outputs/bundle/release/*.apk', fingerprint: true
+                archiveArtifacts artifacts: 'build/app/outputs/**/*.apk', fingerprint: true
             }
 
             post {
