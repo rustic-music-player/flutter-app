@@ -28,11 +28,13 @@ abstract class Api {
 
   Future<PlayerModel> getPlayer();
 
-  Image fetchAlbumCoverart(AlbumModel album);
+  Future<void> queuePlaylist(String cursor);
 
-  Image fetchArtistImage(ArtistModel artist);
+  Future<void> queueAlbum(String cursor);
 
-  Image fetchCoverart(TrackModel track);
+  Future<void> queueTrack(String cursor);
+
+  NetworkImage fetchCoverart(String url);
 
   Stream<SocketMessage> messages();
 }

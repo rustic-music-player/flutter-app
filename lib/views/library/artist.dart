@@ -53,7 +53,10 @@ class ArtistListItem extends StatelessWidget {
     var api = context.repository<Api>();
     return ListTile(
       title: Text(artist.name),
-      leading: CircleAvatar(child: api.fetchArtistImage(artist)),
+      leading: CircleAvatar(
+          child: artist.image == null
+              ? Icon(Icons.person)
+              : Image(image: api.fetchCoverart(artist.image))),
     );
   }
 }

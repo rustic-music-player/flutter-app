@@ -26,13 +26,15 @@ class HttpApi implements Api {
   final String baseUrl;
   IOWebSocketChannel channel;
 
+  String get apiUrl => 'http://$baseUrl/api';
+
   HttpApi({this.baseUrl}) {
     channel = IOWebSocketChannel.connect('ws://$baseUrl/api/socket');
   }
 
   Future<dynamic> fetchGeneric(String url) async {
     log('GET $url');
-    final res = await http.get('http://$baseUrl/api/$url');
+    final res = await http.get('$apiUrl/$url');
 
     if (res.statusCode == 200) {
       return jsonDecode(res.body);
@@ -79,22 +81,22 @@ class HttpApi implements Api {
 
   @override
   Future<void> playerPlay() async {
-    await http.post('http://$baseUrl/api/player/play');
+    await http.post('$apiUrl/player/play');
   }
 
   @override
   Future<void> playerPause() async {
-    await http.post('http://$baseUrl/api/player/pause');
+    await http.post('$apiUrl/player/pause');
   }
 
   @override
   Future<void> playerNext() async {
-    await http.post('http://$baseUrl/api/player/next');
+    await http.post('$apiUrl/player/next');
   }
 
   @override
   Future<void> playerPrev() async {
-    await http.post('http://$baseUrl/api/player/prev');
+    await http.post('$apiUrl/player/prev');
   }
 
   @override
@@ -105,27 +107,26 @@ class HttpApi implements Api {
   }
 
   @override
-  Image fetchAlbumCoverart(AlbumModel album) {
-    if (album?.coverart == null) {
-      return null;
-    }
-    return Image.network('http://$baseUrl${album.coverart}');
+  Future<void> queuePlaylist(String cursor) async {
+    await http.post('$apiUrl/queue/playlist/$cursor');
   }
 
   @override
-  Image fetchArtistImage(ArtistModel artist) {
-    if (artist?.image == null) {
-      return null;
-    }
-    return Image.network('http://$baseUrl${artist.image}');
+  Future<void> queueAlbum(String cursor) async {
+    await http.post('$apiUrl/queue/album/$cursor');
   }
 
   @override
-  Image fetchCoverart(TrackModel track) {
-    if (track?.coverart == null) {
+  Future<void> queueTrack(String cursor) async {
+    await http.post('$apiUrl/queue/track/$cursor');
+  }
+
+  @override
+  NetworkImage fetchCoverart(String url) {
+    if (url == null) {
       return null;
     }
-    return Image.network('http://$baseUrl${track.coverart}');
+    return NetworkImage('http://$baseUrl$url');
   }
 
   @override

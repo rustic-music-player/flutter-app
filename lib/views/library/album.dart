@@ -50,8 +50,10 @@ class AlbumListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var api = context.repository<Api>();
     return ListTile(
-      title: Text(album.title),
-      leading: CircleAvatar(child: api.fetchAlbumCoverart(album)),
-    );
+        title: Text(album.title),
+        leading: CircleAvatar(
+            child: album.coverart == null
+                ? Icon(Icons.album)
+                : Image(image: api.fetchCoverart(album.coverart))));
   }
 }

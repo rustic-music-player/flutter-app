@@ -8,6 +8,8 @@ import 'package:rustic/api/models/search.dart';
 import 'package:rustic/views/search/search_bloc.dart';
 
 class SearchView extends StatefulWidget {
+  static const routeName = '/search';
+
   @override
   _SearchViewState createState() {
     return new _SearchViewState();
@@ -97,7 +99,7 @@ class SearchAlbumEntry extends StatelessWidget {
           children: <Widget>[
             album.coverart == null
                 ? Icon(Icons.album)
-                : api.fetchAlbumCoverart(album),
+                : Image(image: api.fetchCoverart(album.coverart)),
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: Column(

@@ -50,7 +50,7 @@ class LibraryViewState extends State<LibraryView> {
                 ArtistListView(),
                 TrackListView(),
               ])),
-              RusticPlayer()
+              RusticPlayerBar()
             ],
           ),
         ));
