@@ -12,6 +12,7 @@ pipeline {
 
     environment {
         PUB_CACHE='/build_cache/dart'
+        HOME='.'
     }
 
     stages {
