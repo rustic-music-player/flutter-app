@@ -9,6 +9,8 @@ import 'package:rustic/views/library/library.dart';
 import 'package:rustic/views/player.dart';
 import 'package:rustic/views/playlist/playlist.dart';
 import 'package:rustic/views/playlists/playlists.dart';
+import 'package:rustic/views/search/albums.dart';
+import 'package:rustic/views/search/playlists.dart';
 import 'package:rustic/views/search/search.dart';
 import 'package:rustic/views/search/search_bloc.dart';
 
@@ -52,6 +54,7 @@ class MyApp extends StatelessWidget {
               child: MaterialApp(
                 title: 'Rustic',
                 theme: ThemeData(
+                    brightness: Brightness.dark,
                     primarySwatch: Colors.blueGrey,
                     accentColor: Colors.deepOrangeAccent,
                     visualDensity: VisualDensity.adaptivePlatformDensity),
@@ -61,6 +64,9 @@ class MyApp extends StatelessWidget {
                   PlaylistsView.routeName: (context) => PlaylistsView(),
                   PlaylistView.routeName: (context) => PlaylistView(),
                   SearchView.routeName: (context) => SearchView(),
+                  SearchAlbumView.routeName: (context) => SearchAlbumView(),
+                  SearchPlaylistView.routeName: (context) =>
+                      SearchPlaylistView(),
                   PlayerView.routeName: (context) => PlayerView(),
                   AlbumView.routeName: (context) => AlbumView()
                 },

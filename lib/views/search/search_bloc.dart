@@ -15,8 +15,7 @@ class SearchBloc extends Bloc<String, SearchResultModel> {
   @override
   Stream<Transition<String, SearchResultModel>> transformEvents(
       Stream<String> events, next) {
-    return super.transformEvents(
-        events.debounceTime(Duration(milliseconds: 500)), next);
+    return events.debounceTime(Duration(milliseconds: 500)).switchMap(next);
   }
 
   @override
