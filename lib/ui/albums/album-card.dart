@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
@@ -20,21 +21,27 @@ class AlbumCard extends StatelessWidget {
             onPressed: () => Navigator.pushNamed(context, AlbumView.routeName,
                 arguments: AlbumViewArguments(this.album)),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                album.coverart == null
-                    ? Icon(Icons.album)
-                    : Image(
-                        image: api.fetchCoverart(album.coverart),
-                      ),
+                AspectRatio(
+                    aspectRatio: 1,
+                    child: album.coverart == null
+                        ? Container(
+                            color: Colors.white10,
+                            child: Icon(
+                              Icons.album,
+                              size: 96,
+                            ))
+                        : Image(
+                            image: api.fetchCoverart(album.coverart),
+                          )),
                 Padding(
-                  padding: const EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(album.title),
-                      album.artist == null
-                          ? Container()
-                          : Text(album.artist.name)
+                      Text(album.artist?.name ?? '')
                     ],
                   ),
                 )

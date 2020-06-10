@@ -4,9 +4,11 @@ import 'package:rustic/api/api.dart';
 import 'package:rustic/api/http.dart';
 import 'package:rustic/media_bloc.dart';
 import 'package:rustic/notifications.dart';
+import 'package:rustic/queue_bloc.dart';
 import 'package:rustic/views/album/album.dart';
 import 'package:rustic/views/library/library.dart';
-import 'package:rustic/views/player.dart';
+import 'package:rustic/views/player/player.dart';
+import 'package:rustic/views/player/queue.dart';
 import 'package:rustic/views/playlist/playlist.dart';
 import 'package:rustic/views/playlists/playlists.dart';
 import 'package:rustic/views/search/albums.dart';
@@ -45,6 +47,9 @@ class MyApp extends StatelessWidget {
               ),
               BlocProvider(
                   create: (BuildContext context) =>
+                      QueueBloc(api: context.repository())),
+              BlocProvider(
+                  create: (BuildContext context) =>
                       CurrentMediaBloc(api: context.repository()))
             ],
             child: BlocListener<CurrentMediaBloc, Playing>(
@@ -61,6 +66,7 @@ class MyApp extends StatelessWidget {
                 initialRoute: '/',
                 routes: {
                   Navigator.defaultRouteName: (context) => LibraryView(),
+                  AlbumView.routeName: (context) => AlbumView(),
                   PlaylistsView.routeName: (context) => PlaylistsView(),
                   PlaylistView.routeName: (context) => PlaylistView(),
                   SearchView.routeName: (context) => SearchView(),
@@ -68,7 +74,7 @@ class MyApp extends StatelessWidget {
                   SearchPlaylistView.routeName: (context) =>
                       SearchPlaylistView(),
                   PlayerView.routeName: (context) => PlayerView(),
-                  AlbumView.routeName: (context) => AlbumView()
+                  QueueView.routeName: (context) => QueueView(),
                 },
               ),
             )));

@@ -5,6 +5,7 @@ import 'package:rustic/api/models/playlist.dart';
 import 'package:rustic/ui/drawer.dart';
 import 'package:rustic/ui/player.dart';
 import 'package:rustic/ui/playlists/playlist-list.dart';
+import 'package:rustic/ui/search-btn.dart';
 
 class PlaylistsView extends StatelessWidget {
   static const routeName = '/playlists';
@@ -14,7 +15,10 @@ class PlaylistsView extends StatelessWidget {
     var api = context.repository<Api>();
     return Scaffold(
         drawer: RusticDrawer(),
-        appBar: AppBar(title: Text('Playlists')),
+        appBar: AppBar(
+          title: Text('Playlists'),
+          actions: <Widget>[SearchButton()],
+        ),
         body: Column(children: <Widget>[
           Expanded(
               child: FutureBuilder<List<PlaylistModel>>(

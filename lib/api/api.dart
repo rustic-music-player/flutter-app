@@ -28,6 +28,8 @@ abstract class Api {
 
   Future<PlayerModel> getPlayer();
 
+  Future<List<TrackModel>> getQueue();
+
   Future<void> queuePlaylist(String cursor);
 
   Future<void> queueAlbum(String cursor);

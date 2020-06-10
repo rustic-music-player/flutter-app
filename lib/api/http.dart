@@ -25,6 +25,7 @@ Future<String> getBaseUrl() async {
 class HttpApi implements Api {
   final String baseUrl;
   IOWebSocketChannel channel;
+  Stream<SocketMessage> socketStream;
 
   String get apiUrl => 'http://$baseUrl/api';
 
@@ -107,6 +108,13 @@ class HttpApi implements Api {
   }
 
   @override
+  Future<List<TrackModel>> getQueue() async {
+    var queue = await fetchGeneric('queue');
+
+    return queue.map<TrackModel>((t) => TrackModel.fromJson(t)).toList();
+  }
+
+  @override
   Future<void> queuePlaylist(String cursor) async {
     await http.post('$apiUrl/queue/playlist/$cursor');
   }
@@ -131,8 +139,13 @@ class HttpApi implements Api {
 
   @override
   Stream<SocketMessage> messages() {
-    return channel.stream.map((event) {
-      return SocketMessage.fromJson(jsonDecode(event));
-    });
+    if (socketStream == null) {
+      socketStream = channel.stream.map((event) {
+        var msg = SocketMessage.fromJson(jsonDecode(event));
+        log('Socket $msg');
+        return msg;
+      }).asBroadcastStream();
+    }
+    return socketStream;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rustic/ui/drawer.dart';
 import 'package:rustic/ui/player.dart';
+import 'package:rustic/ui/search-btn.dart';
 import 'package:rustic/views/library/album.dart';
 import 'package:rustic/views/library/artist.dart';
 import 'package:rustic/views/library/track.dart';
@@ -34,13 +35,7 @@ class LibraryViewState extends State<LibraryView> {
                 text: 'Tracks',
               )
             ]),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () => Navigator.of(context).pushNamed('/search'),
-                tooltip: 'Search',
-              )
-            ],
+            actions: <Widget>[SearchButton()],
           ),
           body: Column(
             children: <Widget>[
