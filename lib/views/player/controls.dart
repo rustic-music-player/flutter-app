@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
+import 'package:rustic/media_bloc.dart';
 
 class PlayerControls extends StatelessWidget {
-  final bool isPlaying;
-
-  PlayerControls(this.isPlaying);
-
   @override
   Widget build(BuildContext context) {
     Api api = context.repository();
@@ -29,7 +26,7 @@ class PlayerControls extends StatelessWidget {
             iconSize: 32,
             onPressed: () => api.playerPrev(),
           ),
-          PlayPauseButton(isPlaying: isPlaying),
+          PlayPauseButton(),
           IconButton(
             icon: Icon(Icons.skip_next, color: Colors.white),
             iconSize: 32,
@@ -51,42 +48,60 @@ class PlayerControls extends StatelessWidget {
 class PlayPauseButton extends StatelessWidget {
   const PlayPauseButton({
     Key key,
-    @required this.isPlaying,
   }) : super(key: key);
-
-  final bool isPlaying;
 
   @override
   Widget build(BuildContext context) {
     Api api = context.repository();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Ink(
-        decoration: const ShapeDecoration(
-            shape: const CircleBorder(), color: Colors.deepOrange),
-        child: IconButton(
-          icon: Icon(
-            isPlaying ? Icons.pause : Icons.play_arrow,
-            color: Colors.white,
+    return BlocBuilder<CurrentMediaBloc, Playing>(
+      condition: (prev, next) => prev.isPlaying != next.isPlaying,
+      builder: (context, state) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Ink(
+          decoration: const ShapeDecoration(
+              shape: const CircleBorder(), color: Colors.deepOrange),
+          child: IconButton(
+            icon: Icon(
+              state.isPlaying ? Icons.pause : Icons.play_arrow,
+              color: Colors.white,
+            ),
+            iconSize: 56,
+            onPressed: () =>
+                state.isPlaying ? api.playerPause() : api.playerPlay(),
           ),
-          iconSize: 56,
-          onPressed: () => isPlaying ? api.playerPause() : api.playerPlay(),
         ),
       ),
     );
   }
 }
 
-class PlayerPlaybackControl extends StatelessWidget {
-  const PlayerPlaybackControl({
+class PlayerVolumeControl extends StatelessWidget {
+  const PlayerVolumeControl({
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      child: Slider(value: 0),
-      padding: const EdgeInsets.fromLTRB(32, 0, 32, 16),
+    CurrentMediaBloc bloc = context.bloc();
+    return BlocBuilder<CurrentMediaBloc, Playing>(
+      condition: (prev, next) => prev.volume != next.volume,
+      builder: (context, state) => Padding(
+        child: Row(children: <Widget>[
+          IconButton(
+              icon: Icon(Icons.volume_down),
+              onPressed: () => bloc.add(SetVolume(state.volume - 0.1))),
+          Expanded(
+              child: Slider(
+            value: state.volume,
+            divisions: 100,
+            onChanged: (volume) => bloc.add(SetVolume(volume)),
+          )),
+          IconButton(
+              icon: Icon(Icons.volume_up),
+              onPressed: () => bloc.add(SetVolume(state.volume + 0.1))),
+        ]),
+        padding: const EdgeInsets.fromLTRB(32, 0, 32, 16),
+      ),
     );
   }
 }

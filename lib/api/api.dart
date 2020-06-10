@@ -18,6 +18,8 @@ abstract class Api {
 
   Future<SearchResultModel> search(String query);
 
+  Future<PlayerModel> getPlayer();
+
   Future<void> playerPlay();
 
   Future<void> playerPause();
@@ -26,7 +28,7 @@ abstract class Api {
 
   Future<void> playerPrev();
 
-  Future<PlayerModel> getPlayer();
+  Future<void> setVolume(double volume);
 
   Future<List<TrackModel>> getQueue();
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rustic/api/models/track.dart';
 import 'package:rustic/media_bloc.dart';
 import 'package:rustic/views/player/controls.dart';
 import 'package:rustic/views/player/coverart.dart';
@@ -12,29 +11,25 @@ class PlayerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CurrentMediaBloc, Playing>(
-        builder: (context, state) => Scaffold(
-              appBar: AppBar(
-                backgroundColor: const Color.fromARGB(255, 32, 32, 32),
-                leading: ClosePlayerButton(),
-                title: const Text("Now Playing"),
-                centerTitle: true,
-                actions: <Widget>[
-                  PlayerFavoriteButton(),
-                  PlayerQueueButton(false)
-                ],
-                elevation: 0,
-              ),
-              backgroundColor: const Color.fromARGB(255, 32, 32, 32),
-              body: Column(
-                children: <Widget>[
-                  PlayerCoverArt(state.track.coverart),
-                  PlayerMetadata(state.track),
-                  PlayerControls(state.isPlaying),
-                  PlayerPlaybackControl(),
-                ],
-              ),
-            ));
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 32, 32, 32),
+        leading: ClosePlayerButton(),
+        title: const Text("Now Playing"),
+        centerTitle: true,
+        actions: <Widget>[PlayerFavoriteButton(), PlayerQueueButton(false)],
+        elevation: 0,
+      ),
+      backgroundColor: const Color.fromARGB(255, 32, 32, 32),
+      body: Column(
+        children: <Widget>[
+          PlayerCoverArt(),
+          PlayerMetadata(),
+          PlayerControls(),
+          PlayerVolumeControl(),
+        ],
+      ),
+    );
   }
 }
 
@@ -91,21 +86,29 @@ class PlayerFavoriteButton extends StatelessWidget {
 }
 
 class PlayerMetadata extends StatelessWidget {
-  final TrackModel track;
-
-  PlayerMetadata(this.track, {Key key}) : super(key: key);
+  PlayerMetadata({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          track.title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+    return BlocBuilder<CurrentMediaBloc, Playing>(
+      condition: (prev, next) => prev.track != next.track,
+      builder: (context, state) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              state.track.title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              state.track.artist?.name ?? "",
+              textAlign: TextAlign.center,
+            )
+          ],
         ),
-        Text(track.artist?.name ?? "")
-      ],
+      ),
     );
   }
 }

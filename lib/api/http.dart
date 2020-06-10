@@ -81,6 +81,13 @@ class HttpApi implements Api {
   }
 
   @override
+  Future<PlayerModel> getPlayer() async {
+    var player = await fetchGeneric('player');
+
+    return PlayerModel.fromJson(player);
+  }
+
+  @override
   Future<void> playerPlay() async {
     await http.post('$apiUrl/player/play');
   }
@@ -101,10 +108,8 @@ class HttpApi implements Api {
   }
 
   @override
-  Future<PlayerModel> getPlayer() async {
-    var player = await fetchGeneric('player');
-
-    return PlayerModel.fromJson(player);
+  Future<void> setVolume(double volume) async {
+    await http.post('$apiUrl/player/volume', headers: { 'Content-Type': 'application/json' }, body: jsonEncode(volume));
   }
 
   @override
@@ -134,6 +139,7 @@ class HttpApi implements Api {
     if (url == null) {
       return null;
     }
+    log('GET $url');
     return NetworkImage('http://$baseUrl$url');
   }
 
