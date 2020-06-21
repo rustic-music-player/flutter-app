@@ -9,7 +9,7 @@ const stateChangedMsg = 'PLAYER_STATE_CHANGED';
 const playingChangedMsg = 'CURRENTLY_PLAYING_CHANGED';
 const volumeChangedMsg = 'VOLUME_CHANGED';
 
-class FetchPlayers {}
+class FetchPlayer {}
 
 class SetVolume {
   final double volume;
@@ -47,18 +47,23 @@ class CurrentMediaBloc extends Bloc<dynamic, Playing> {
   }
 
   @override
-  Playing get initialState => Playing(isPlaying: false, track: null, volume: 1.0);
+  Playing get initialState =>
+      Playing(isPlaying: false, track: null, volume: 1.0);
 
   @override
   Stream<Playing> mapEventToState(dynamic event) async* {
     if (event is SocketMessage) {
       yield handleSocketMessage(event);
     } else if (event is SetVolume) {
-      yield Playing(isPlaying: state.isPlaying, track: state.track, volume: event.volume);
+      yield Playing(
+          isPlaying: state.isPlaying, track: state.track, volume: event.volume);
       await api.setVolume(state.volume);
-    } else {
+    } else if (event is FetchPlayer) {
       var player = await api.getPlayer();
-      yield Playing(isPlaying: player.playing, track: player.current, volume: player.volume);
+      yield Playing(
+          isPlaying: player.playing,
+          track: player.current,
+          volume: player.volume);
     }
   }
 
@@ -66,13 +71,16 @@ class CurrentMediaBloc extends Bloc<dynamic, Playing> {
     switch (event.type) {
       case stateChangedMsg:
         var playing = event.payload as bool;
-        return Playing(track: state.track, isPlaying: playing, volume: state.volume);
+        return Playing(
+            track: state.track, isPlaying: playing, volume: state.volume);
       case playingChangedMsg:
         var track = TrackModel.fromJson(event.payload);
-        return Playing(isPlaying: state.isPlaying, track: track, volume: state.volume);
+        return Playing(
+            isPlaying: state.isPlaying, track: track, volume: state.volume);
       case volumeChangedMsg:
         var volume = event.payload as double;
-        return Playing(isPlaying: state.isPlaying, track: state.track, volume: volume);
+        return Playing(
+            isPlaying: state.isPlaying, track: state.track, volume: volume);
     }
     return state;
   }

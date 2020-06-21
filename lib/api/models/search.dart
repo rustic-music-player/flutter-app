@@ -17,4 +17,9 @@ class SearchResultModel {
 
   factory SearchResultModel.fromJson(Map<String, dynamic> json) =>
       _$SearchResultModelFromJson(json);
+
+  @override
+  String toString() {
+    return "SearchResultModel { tracks: $tracks, albums: $albums, artists: $artists, playlists: $playlists }";
+  }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
-import 'package:rustic/media_bloc.dart';
+import 'package:rustic/state/media_bloc.dart';
 
 class PlayerCoverArt extends StatelessWidget {
   PlayerCoverArt({Key key}) : super(key: key);

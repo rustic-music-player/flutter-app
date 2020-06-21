@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rustic/media_bloc.dart';
+import 'package:rustic/state/media_bloc.dart';
 import 'package:rustic/views/player/controls.dart';
 import 'package:rustic/views/player/coverart.dart';
 import 'package:rustic/views/player/queue.dart';

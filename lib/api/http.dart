@@ -9,6 +9,7 @@ import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/artist.dart';
 import 'package:rustic/api/models/player.dart';
 import 'package:rustic/api/models/playlist.dart';
+import 'package:rustic/api/models/provider.dart';
 import 'package:rustic/api/models/search.dart';
 import 'package:rustic/api/models/socket_msg.dart';
 import 'package:rustic/api/models/track.dart';
@@ -33,9 +34,10 @@ class HttpApi implements Api {
     channel = IOWebSocketChannel.connect('ws://$baseUrl/api/socket');
   }
 
-  Future<dynamic> fetchGeneric(String url) async {
-    log('GET $url');
-    final res = await http.get('$apiUrl/$url');
+  Future<dynamic> fetchGeneric(String url, {query}) async {
+    String uri = query == null ? '$apiUrl/$url' : '$apiUrl/$url?$query';
+    log('GET $uri');
+    final res = await http.get(uri);
 
     if (res.statusCode == 200) {
       return jsonDecode(res.body);
@@ -73,9 +75,13 @@ class HttpApi implements Api {
   }
 
   @override
-  Future<SearchResultModel> search(String query) async {
-    print('search $query');
-    var result = await fetchGeneric('search?query=$query');
+  Future<SearchResultModel> search(String query, List<String> providers) async {
+    print('search $query in providers: $providers');
+    var providerQuery = [];
+    providers.asMap().forEach((i, p) => providerQuery.add('&providers[$i]=$p'));
+    var providerQueryString = providerQuery.join();
+    var result =
+        await fetchGeneric('search', query: 'query=$query$providerQueryString');
 
     return SearchResultModel.fromJson(result);
   }
@@ -109,7 +115,9 @@ class HttpApi implements Api {
 
   @override
   Future<void> setVolume(double volume) async {
-    await http.post('$apiUrl/player/volume', headers: { 'Content-Type': 'application/json' }, body: jsonEncode(volume));
+    await http.post('$apiUrl/player/volume',
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(volume));
   }
 
   @override
@@ -141,6 +149,15 @@ class HttpApi implements Api {
     }
     log('GET $url');
     return NetworkImage('http://$baseUrl$url');
+  }
+
+  @override
+  Future<List<AvailableProviderModel>> fetchProviders() async {
+    var providers = await fetchGeneric('providers/available');
+
+    return providers
+        .map<AvailableProviderModel>((p) => AvailableProviderModel.fromJson(p))
+        .toList();
   }
 
   @override

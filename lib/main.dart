@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/http.dart';
-import 'package:rustic/media_bloc.dart';
+import 'package:rustic/bloc_logger.dart';
 import 'package:rustic/notifications.dart';
-import 'package:rustic/queue_bloc.dart';
+import 'package:rustic/state/media_bloc.dart';
+import 'package:rustic/state/provider_bloc.dart';
+import 'package:rustic/state/queue_bloc.dart';
 import 'package:rustic/views/album/album.dart';
 import 'package:rustic/views/library/library.dart';
 import 'package:rustic/views/player/player.dart';
@@ -21,6 +23,7 @@ const apiHost = '192.168.1.13:8080';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  BlocSupervisor.delegate = BlocLoggerDelegate();
   var notificationsService = NotificationsService(host: apiHost);
   await notificationsService.setup();
   runApp(MyApp(
@@ -41,16 +44,26 @@ class MyApp extends StatelessWidget {
         create: (context) => HttpApi(baseUrl: '$apiHost'),
         child: MultiBlocProvider(
             providers: [
+              BlocProvider(create: (BuildContext context) {
+                var bloc = QueueBloc(api: context.repository());
+                bloc.add(FetchQueue());
+                return bloc;
+              }),
+              BlocProvider(create: (BuildContext context) {
+                var bloc = CurrentMediaBloc(api: context.repository());
+                bloc.add(FetchPlayer());
+
+                return bloc;
+              }),
+              BlocProvider(create: (BuildContext context) {
+                var bloc = ProviderBloc(api: context.repository());
+                bloc.add(FetchProviders());
+                return bloc;
+              }),
               BlocProvider(
-                create: (BuildContext context) =>
-                    SearchBloc(api: context.repository()),
+                create: (BuildContext context) => SearchBloc(
+                    api: context.repository(), providerBloc: context.bloc()),
               ),
-              BlocProvider(
-                  create: (BuildContext context) =>
-                      QueueBloc(api: context.repository())),
-              BlocProvider(
-                  create: (BuildContext context) =>
-                      CurrentMediaBloc(api: context.repository()))
             ],
             child: BlocListener<CurrentMediaBloc, Playing>(
               listener: (context, state) {

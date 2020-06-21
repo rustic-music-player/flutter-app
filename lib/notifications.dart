@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:rustic/media_bloc.dart';
+import 'package:rustic/state/media_bloc.dart';
 
 class NotificationsService {
   final String host;

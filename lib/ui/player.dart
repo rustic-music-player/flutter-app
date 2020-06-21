@@ -3,15 +3,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/track.dart';
-import 'package:rustic/media_bloc.dart';
+import 'package:rustic/state/media_bloc.dart';
 import 'package:rustic/views/player/player.dart';
 
 class RusticPlayerBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var api = context.repository<Api>();
-    var bloc = context.bloc<CurrentMediaBloc>();
-    bloc.add(FetchPlayers);
     return BlocBuilder<CurrentMediaBloc, Playing>(
       builder: (context, state) {
         if (state.track == null) {

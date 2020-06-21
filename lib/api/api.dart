@@ -3,6 +3,7 @@ import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/artist.dart';
 import 'package:rustic/api/models/player.dart';
 import 'package:rustic/api/models/playlist.dart';
+import 'package:rustic/api/models/provider.dart';
 import 'package:rustic/api/models/search.dart';
 import 'package:rustic/api/models/socket_msg.dart';
 import 'package:rustic/api/models/track.dart';
@@ -16,7 +17,7 @@ abstract class Api {
 
   Future<List<PlaylistModel>> fetchPlaylists();
 
-  Future<SearchResultModel> search(String query);
+  Future<SearchResultModel> search(String query, List<String> providers);
 
   Future<PlayerModel> getPlayer();
 
@@ -39,6 +40,8 @@ abstract class Api {
   Future<void> queueTrack(String cursor);
 
   NetworkImage fetchCoverart(String url);
+
+  Future<List<AvailableProviderModel>> fetchProviders();
 
   Stream<SocketMessage> messages();
 }

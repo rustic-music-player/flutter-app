@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/models/track.dart';
-import 'package:rustic/queue_bloc.dart';
+import 'package:rustic/state/queue_bloc.dart';
 import 'package:rustic/ui/track-item.dart';
 import 'package:rustic/views/player/player.dart';
 
@@ -10,8 +10,6 @@ class QueueView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var bloc = context.bloc<QueueBloc>();
-    bloc.add(FetchQueue());
     return BlocBuilder<QueueBloc, List<TrackModel>>(
         builder: (context, state) => Scaffold(
               appBar: AppBar(
