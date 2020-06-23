@@ -149,7 +149,6 @@ class HttpApi implements Api {
     if (url == null) {
       return null;
     }
-    log('GET $url');
     return NetworkImage('http://$baseUrl$url');
   }
 

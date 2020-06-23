@@ -1,7 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/state/server_bloc.dart';
+import 'package:rustic/views/library/albums.dart';
+import 'package:rustic/views/library/artists.dart';
+import 'package:rustic/views/library/tracks.dart';
+import 'package:rustic/views/library/playlists.dart';
 import 'package:rustic/views/servers/servers.dart';
 
 class RusticDrawer extends StatefulWidget {
@@ -66,42 +71,70 @@ class ServerList extends StatelessWidget {
                 title: Text(s.name),
                 subtitle: Text(s.label()),
                 onTap: () => bloc.add(ServerSelectedMsg(s.name)),
+                dense: true,
               ))
           .toList(),
       ListTile(
           title: Text('Manage Servers'),
+          trailing: Icon(Icons.edit),
           onTap: () =>
-              Navigator.popAndPushNamed(context, ServersView.routeName)),
+              Navigator.popAndPushNamed(context, ServersView.routeName),
+          dense: true),
       Divider()
     ]);
+  }
+}
+
+class RusticNavigationItem extends StatelessWidget {
+  final String title;
+  final String routeName;
+  final bool dense;
+  final IconData icon;
+
+  const RusticNavigationItem(this.title, this.routeName,
+      {this.dense = false, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    bool current = ModalRoute.of(context).settings.name == this.routeName;
+    return Container(
+      child: ListTile(
+        title: Text(this.title),
+        leading: this.icon == null
+            ? null
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Icon(this.icon),
+              ),
+        onTap: () => Navigator.popAndPushNamed(context, this.routeName),
+        dense: this.dense,
+      ),
+      color: current ? Colors.deepOrangeAccent.withAlpha(64) : null,
+    );
   }
 }
 
 class RusticNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      ListTile(
-        title: Text('Library'),
-        onTap: () {
-          Navigator.popAndPushNamed(context, '/');
-        },
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+        Widget>[
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Text('Library',
+            style:
+                TextStyle(color: Colors.white54, fontWeight: FontWeight.bold)),
       ),
-      ListTile(
-          title: Text('Playlists'),
-          onTap: () {
-            Navigator.popAndPushNamed(context, '/playlists');
-          }),
-      ListTile(
-          title: Text('Providers'),
-          onTap: () {
-            Navigator.popAndPushNamed(context, '/providers');
-          }),
-      ListTile(
-          title: Text('Extensions'),
-          onTap: () {
-            Navigator.popAndPushNamed(context, '/extensions');
-          })
+      RusticNavigationItem('Albums', AlbumsView.routeName, icon: Icons.album),
+      RusticNavigationItem('Artists', ArtistsView.routeName,
+          icon: Icons.person),
+      RusticNavigationItem('Tracks', TracksView.routeName,
+          icon: Icons.music_note),
+      RusticNavigationItem('Playlists', PlaylistsView.routeName,
+          icon: Icons.playlist_play),
+      Divider(),
+      RusticNavigationItem('Providers', '/providers', dense: true),
+      RusticNavigationItem('Extensions', '/extensions', dense: true),
     ]);
   }
 }

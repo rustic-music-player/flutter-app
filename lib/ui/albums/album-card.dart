@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
-import 'package:rustic/views/album/album.dart';
+import 'package:rustic/state/server_bloc.dart';
+import 'package:rustic/views/library/album.dart';
 
 class AlbumCard extends StatelessWidget {
   final AlbumModel album;
@@ -12,7 +12,7 @@ class AlbumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var api = context.repository<Api>();
+    ServerBloc bloc = context.bloc();
     return FractionallySizedBox(
         widthFactor: .5,
         child: Card(
@@ -33,7 +33,7 @@ class AlbumCard extends StatelessWidget {
                               size: 96,
                             ))
                         : Image(
-                            image: api.fetchCoverart(album.coverart),
+                            image: bloc.getApi().fetchCoverart(album.coverart),
                           )),
                 Padding(
                   padding: const EdgeInsets.all(8.0),

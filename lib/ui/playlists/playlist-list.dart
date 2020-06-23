@@ -9,8 +9,7 @@ class PlaylistList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      direction: Axis.horizontal,
+    return Column(
       children:
           this.playlists.map((playlist) => PlaylistListItem(playlist)).toList(),
     );

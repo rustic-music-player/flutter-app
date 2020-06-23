@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/models/playlist.dart';
 import 'package:rustic/state/server_bloc.dart';
 import 'package:rustic/ui/player.dart';
-import 'package:rustic/ui/track-item.dart';
+import 'package:rustic/views/library/tracks.dart';
 
 class PlaylistViewArguments {
   final PlaylistModel playlist;
@@ -32,13 +32,7 @@ class PlaylistView extends StatelessWidget {
       ),
       body: Column(
         children: <Widget>[
-          Expanded(
-            child: ListView(
-              children: args.playlist.tracks
-                  .map<Widget>((t) => TrackListItem(t))
-                  .toList(),
-            ),
-          ),
+          Expanded(child: TrackList(tracks: args.playlist.tracks)),
           RusticPlayerBar()
         ],
       ),

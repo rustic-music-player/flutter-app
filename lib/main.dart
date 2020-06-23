@@ -6,12 +6,14 @@ import 'package:rustic/state/media_bloc.dart';
 import 'package:rustic/state/provider_bloc.dart';
 import 'package:rustic/state/queue_bloc.dart';
 import 'package:rustic/state/server_bloc.dart';
-import 'package:rustic/views/album/album.dart';
-import 'package:rustic/views/library/library.dart';
+import 'package:rustic/views/library/album.dart';
+import 'package:rustic/views/library/albums.dart';
+import 'package:rustic/views/library/artists.dart';
+import 'package:rustic/views/library/playlist.dart';
+import 'package:rustic/views/library/playlists.dart';
+import 'package:rustic/views/library/tracks.dart';
 import 'package:rustic/views/player/player.dart';
 import 'package:rustic/views/player/queue.dart';
-import 'package:rustic/views/playlist/playlist.dart';
-import 'package:rustic/views/playlists/playlists.dart';
 import 'package:rustic/views/search/albums.dart';
 import 'package:rustic/views/search/playlists.dart';
 import 'package:rustic/views/search/search.dart';
@@ -76,9 +78,11 @@ class MyApp extends StatelessWidget {
                 primarySwatch: Colors.blueGrey,
                 accentColor: Colors.deepOrangeAccent,
                 visualDensity: VisualDensity.adaptivePlatformDensity),
-            initialRoute: '/',
+            initialRoute: AlbumsView.routeName,
             routes: {
-              Navigator.defaultRouteName: (context) => LibraryView(),
+              AlbumsView.routeName: (context) => AlbumsView(),
+              ArtistsView.routeName: (context) => ArtistsView(),
+              TracksView.routeName: (context) => TracksView(),
               AlbumView.routeName: (context) => AlbumView(),
               PlaylistsView.routeName: (context) => PlaylistsView(),
               PlaylistView.routeName: (context) => PlaylistView(),
