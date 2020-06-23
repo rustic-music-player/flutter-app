@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/playlist.dart';
+import 'package:rustic/state/server_bloc.dart';
 import 'package:rustic/ui/player.dart';
 import 'package:rustic/ui/track-item.dart';
 
@@ -19,7 +19,7 @@ class PlaylistView extends StatelessWidget {
   Widget build(BuildContext context) {
     final PlaylistViewArguments args =
         ModalRoute.of(context).settings.arguments;
-    final Api api = context.repository<Api>();
+    final ServerBloc bloc = context.bloc();
 
     return Scaffold(
       appBar: AppBar(
@@ -28,7 +28,7 @@ class PlaylistView extends StatelessWidget {
               icon: Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context))),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => api.queuePlaylist(args.playlist.cursor),
+        onPressed: () => bloc.getApi().queuePlaylist(args.playlist.cursor),
       ),
       body: Column(
         children: <Widget>[

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/track.dart';
 import 'package:rustic/state/media_bloc.dart';
+import 'package:rustic/state/server_bloc.dart';
 import 'package:rustic/views/player/player.dart';
 
 class RusticPlayerBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var api = context.repository<Api>();
     return BlocBuilder<CurrentMediaBloc, Playing>(
       builder: (context, state) {
+        ServerBloc bloc = context.bloc();
         if (state.track == null) {
           return Container();
         }
@@ -23,17 +23,19 @@ class RusticPlayerBar extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(0.0),
-                  child: Image(image: api.fetchCoverart(state.track.coverart)),
+                  child: Image(
+                      image: bloc.getApi().fetchCoverart(state.track.coverart)),
                 ),
                 CurrentlyPlayingText(state.track),
                 IconButton(
                   icon: Icon(state.isPlaying ? Icons.pause : Icons.play_arrow),
-                  onPressed: () =>
-                      state.isPlaying ? api.playerPause() : api.playerPlay(),
+                  onPressed: () => state.isPlaying
+                      ? bloc.getApi().playerPause()
+                      : bloc.getApi().playerPlay(),
                 ),
                 IconButton(
                   icon: Icon(Icons.skip_next),
-                  onPressed: () => api.playerNext(),
+                  onPressed: () => bloc.getApi().playerNext(),
                 )
               ],
             ),

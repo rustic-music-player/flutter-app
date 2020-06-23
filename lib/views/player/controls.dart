@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/state/media_bloc.dart';
+import 'package:rustic/state/server_bloc.dart';
 
 class PlayerControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Api api = context.repository();
+    final ServerBloc bloc = context.bloc();
 
     return Expanded(
         child: Padding(
@@ -24,13 +25,13 @@ class PlayerControls extends StatelessWidget {
               color: Colors.white,
             ),
             iconSize: 32,
-            onPressed: () => api.playerPrev(),
+            onPressed: () => bloc.getApi().playerPrev(),
           ),
           PlayPauseButton(),
           IconButton(
             icon: Icon(Icons.skip_next, color: Colors.white),
             iconSize: 32,
-            onPressed: () => api.playerNext(),
+            onPressed: () => bloc.getApi().playerNext(),
           ),
           IconButton(
               icon: Icon(

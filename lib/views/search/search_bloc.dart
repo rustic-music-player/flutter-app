@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/search.dart';
 import 'package:rustic/state/provider_bloc.dart';
+import 'package:rustic/state/server_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
 class SearchEvent {}
@@ -31,13 +31,13 @@ class ProviderSelectionChanged extends SearchEvent {
 }
 
 class SearchBloc extends Bloc<SearchEvent, SearchResultModel> {
-  final Api api;
+  final ServerBloc serverBloc;
   final ProviderBloc providerBloc;
   StreamSubscription providerBlocSubscription;
   List<String> providers = List();
   String query;
 
-  SearchBloc({this.api, this.providerBloc}) {
+  SearchBloc({this.serverBloc, this.providerBloc}) {
     providerBlocSubscription = providerBloc.listen((state) {
       this.add(ProviderSelectionChanged(state.active));
     });
@@ -70,6 +70,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchResultModel> {
     if (query == null) {
       return;
     }
-    yield await this.api.search(this.query, this.providers);
+    yield await this.serverBloc.getApi().search(this.query, this.providers);
   }
 }

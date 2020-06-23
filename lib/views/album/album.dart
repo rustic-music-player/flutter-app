@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
+import 'package:rustic/state/server_bloc.dart';
 import 'package:rustic/ui/player.dart';
 import 'package:rustic/ui/track-item.dart';
 
@@ -18,7 +18,7 @@ class AlbumView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AlbumViewArguments args = ModalRoute.of(context).settings.arguments;
-    final Api api = context.repository<Api>();
+    final ServerBloc bloc = context.bloc();
 
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +27,7 @@ class AlbumView extends StatelessWidget {
               icon: Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context))),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => api.queueAlbum(args.album.cursor),
+        onPressed: () => bloc.getApi().queueAlbum(args.album.cursor),
       ),
       body: Column(
         children: <Widget>[

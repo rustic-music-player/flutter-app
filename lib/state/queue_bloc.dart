@@ -1,20 +1,20 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/socket_msg.dart';
 import 'package:rustic/api/models/track.dart';
+import 'package:rustic/state/server_bloc.dart';
 
 const queueUpdatedMsg = 'QUEUE_UPDATED';
 
 class FetchQueue {}
 
 class QueueBloc extends Bloc<dynamic, List<TrackModel>> {
-  final Api api;
+  final ServerBloc serverBloc;
   StreamSubscription socketSubscription;
 
-  QueueBloc({this.api}) {
-    socketSubscription = api.messages().listen((event) {
+  QueueBloc({this.serverBloc}) {
+    socketSubscription = serverBloc.events().listen((event) {
       this.add(event);
     });
   }
@@ -33,7 +33,7 @@ class QueueBloc extends Bloc<dynamic, List<TrackModel>> {
     if (event is SocketMessage) {
       yield handleSocketMessage(event);
     } else {
-      yield await api.getQueue();
+      yield await serverBloc.getApi().getQueue();
     }
   }
 

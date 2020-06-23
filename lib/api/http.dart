@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/artist.dart';
@@ -170,5 +172,20 @@ class HttpApi implements Api {
       }).asBroadcastStream();
     }
     return socketStream;
+  }
+
+  @override
+  Future<String> getLocalCoverart(TrackModel track) async {
+    return await _downloadAndSaveFile(
+        'http://${this.baseUrl}${track.coverart}', track.cursor);
+  }
+
+  Future<String> _downloadAndSaveFile(String url, String fileName) async {
+    var directory = await getApplicationDocumentsDirectory();
+    var filePath = '${directory.path}/media-thumbnail-$fileName';
+    var response = await http.get(url);
+    var file = File(filePath);
+    await file.writeAsBytes(response.bodyBytes);
+    return filePath;
   }
 }

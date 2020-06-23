@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/provider.dart';
+import 'package:rustic/state/server_bloc.dart';
 
 abstract class ProviderMsg {}
 
@@ -32,9 +33,9 @@ class ProviderList {
 }
 
 class ProviderBloc extends Bloc<ProviderMsg, ProviderList> {
-  final Api api;
+  final ServerBloc serverBloc;
 
-  ProviderBloc({this.api});
+  ProviderBloc({this.serverBloc});
 
   @override
   ProviderList get initialState =>
@@ -56,7 +57,7 @@ class ProviderBloc extends Bloc<ProviderMsg, ProviderList> {
       }
     }
     if (event is FetchProviders) {
-      var providers = await api.fetchProviders();
+      var providers = await serverBloc.getApi().fetchProviders();
       var providerNames = providers
           .where((p) =>
               p.authState.state == AuthStateModel.Authenticated ||

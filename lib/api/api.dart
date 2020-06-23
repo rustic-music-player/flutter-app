@@ -44,4 +44,6 @@ abstract class Api {
   Future<List<AvailableProviderModel>> fetchProviders();
 
   Stream<SocketMessage> messages();
+
+  Future<String> getLocalCoverart(TrackModel track);
 }

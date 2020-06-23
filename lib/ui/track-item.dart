@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/track.dart';
+import 'package:rustic/state/server_bloc.dart';
 
 class TrackListItem extends StatelessWidget {
   final TrackModel track;
@@ -10,14 +10,14 @@ class TrackListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var api = context.repository<Api>();
+    ServerBloc bloc = context.bloc();
     return ListTile(
       title: Text(track.title),
-      onTap: () => api.queueTrack(track.cursor),
+      onTap: () => bloc.getApi().queueTrack(track.cursor),
       leading: CircleAvatar(
           child: track.coverart == null
               ? Icon(Icons.album)
-              : Image(image: api.fetchCoverart(track.coverart))),
+              : Image(image: bloc.getApi().fetchCoverart(track.coverart))),
     );
   }
 }

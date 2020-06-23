@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/socket_msg.dart';
 import 'package:rustic/api/models/track.dart';
+import 'package:rustic/state/server_bloc.dart';
 
 const stateChangedMsg = 'PLAYER_STATE_CHANGED';
 const playingChangedMsg = 'CURRENTLY_PLAYING_CHANGED';
@@ -31,11 +31,11 @@ class Playing {
 }
 
 class CurrentMediaBloc extends Bloc<dynamic, Playing> {
-  final Api api;
+  final ServerBloc serverBloc;
   StreamSubscription socketSubscription;
 
-  CurrentMediaBloc({this.api}) {
-    socketSubscription = api.messages().listen((event) {
+  CurrentMediaBloc({this.serverBloc}) {
+    socketSubscription = serverBloc.events().listen((event) {
       this.add(event);
     });
   }
@@ -57,9 +57,9 @@ class CurrentMediaBloc extends Bloc<dynamic, Playing> {
     } else if (event is SetVolume) {
       yield Playing(
           isPlaying: state.isPlaying, track: state.track, volume: event.volume);
-      await api.setVolume(state.volume);
+      await serverBloc.getApi().setVolume(state.volume);
     } else if (event is FetchPlayer) {
-      var player = await api.getPlayer();
+      var player = await serverBloc.getApi().getPlayer();
       yield Playing(
           isPlaying: player.playing,
           track: player.current,
