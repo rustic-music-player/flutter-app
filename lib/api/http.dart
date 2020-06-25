@@ -5,6 +5,8 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_logger/http_logger.dart';
+import 'package:http_middleware/http_middleware.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
@@ -15,6 +17,7 @@ import 'package:rustic/api/models/provider.dart';
 import 'package:rustic/api/models/search.dart';
 import 'package:rustic/api/models/socket_msg.dart';
 import 'package:rustic/api/models/track.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -27,19 +30,25 @@ Future<String> getBaseUrl() async {
 
 class HttpApi implements Api {
   final String baseUrl;
+  HttpWithMiddleware client;
   IOWebSocketChannel channel;
   Stream<SocketMessage> socketStream;
 
   String get apiUrl => 'http://$baseUrl/api';
 
   HttpApi({this.baseUrl}) {
-    channel = IOWebSocketChannel.connect('ws://$baseUrl/api/socket');
+    channel = connectSocket();
+    client = HttpWithMiddleware.build(middlewares: [
+      HttpLogger(logLevel: LogLevel.BASIC),
+    ]);
   }
+
+  IOWebSocketChannel connectSocket() =>
+      IOWebSocketChannel.connect('ws://$baseUrl/api/socket');
 
   Future<dynamic> fetchGeneric(String url, {query}) async {
     String uri = query == null ? '$apiUrl/$url' : '$apiUrl/$url?$query';
-    log('GET $uri');
-    final res = await http.get(uri);
+    final res = await client.get(uri);
 
     if (res.statusCode == 200) {
       return jsonDecode(res.body);
@@ -53,6 +62,22 @@ class HttpApi implements Api {
     var list = await fetchGeneric('library/albums');
 
     return list.map<AlbumModel>((a) => AlbumModel.fromJson(a)).toList();
+  }
+
+  @override
+  Future<AlbumModel> fetchAlbum(String cursor) async {
+    var res = await fetchGeneric('library/albums/$cursor');
+
+    return AlbumModel.fromJson(res);
+  }
+
+  @override
+  Future<void> addAlbumToLibrary(AlbumModel album) async {
+    var res = await client.post('$apiUrl/library/albums/${album.cursor}');
+
+    if (res.statusCode >= 400) {
+      throw Exception("Invalid status code ${res.statusCode}");
+    }
   }
 
   @override
@@ -97,27 +122,27 @@ class HttpApi implements Api {
 
   @override
   Future<void> playerPlay() async {
-    await http.post('$apiUrl/player/play');
+    await client.post('$apiUrl/player/play');
   }
 
   @override
   Future<void> playerPause() async {
-    await http.post('$apiUrl/player/pause');
+    await client.post('$apiUrl/player/pause');
   }
 
   @override
   Future<void> playerNext() async {
-    await http.post('$apiUrl/player/next');
+    await client.post('$apiUrl/player/next');
   }
 
   @override
   Future<void> playerPrev() async {
-    await http.post('$apiUrl/player/prev');
+    await client.post('$apiUrl/player/prev');
   }
 
   @override
   Future<void> setVolume(double volume) async {
-    await http.post('$apiUrl/player/volume',
+    await client.post('$apiUrl/player/volume',
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(volume));
   }
@@ -131,17 +156,17 @@ class HttpApi implements Api {
 
   @override
   Future<void> queuePlaylist(String cursor) async {
-    await http.post('$apiUrl/queue/playlist/$cursor');
+    await client.post('$apiUrl/queue/playlist/$cursor');
   }
 
   @override
   Future<void> queueAlbum(String cursor) async {
-    await http.post('$apiUrl/queue/album/$cursor');
+    await client.post('$apiUrl/queue/album/$cursor');
   }
 
   @override
   Future<void> queueTrack(String cursor) async {
-    await http.post('$apiUrl/queue/track/$cursor');
+    await client.post('$apiUrl/queue/track/$cursor');
   }
 
   @override
@@ -164,7 +189,10 @@ class HttpApi implements Api {
   @override
   Stream<SocketMessage> messages() {
     if (socketStream == null) {
-      socketStream = channel.stream.map((event) {
+      socketStream = channel.stream.onErrorResume((e) {
+        this.channel = connectSocket();
+        return this.channel.stream;
+      }).map((event) {
         var msg = SocketMessage.fromJson(jsonDecode(event));
         log('Socket $msg');
         return msg;
@@ -179,10 +207,20 @@ class HttpApi implements Api {
         'http://${this.baseUrl}${track.coverart}', track.cursor);
   }
 
+  @override
+  Future<void> setRepeat(RepeatMode repeat) async {
+    var res = await client.post('$apiUrl/player/repeat',
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(encodeRepeatMode(repeat)));
+    if (res.statusCode >= 400) {
+      throw Exception("Invalid status code ${res.statusCode}");
+    }
+  }
+
   Future<String> _downloadAndSaveFile(String url, String fileName) async {
     var directory = await getApplicationDocumentsDirectory();
     var filePath = '${directory.path}/media-thumbnail-$fileName';
-    var response = await http.get(url);
+    var response = await client.get(url);
     var file = File(filePath);
     await file.writeAsBytes(response.bodyBytes);
     return filePath;

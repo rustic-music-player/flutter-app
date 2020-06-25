@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/state/server_bloc.dart';
 import 'package:rustic/ui/player.dart';
-import 'package:rustic/ui/track-item.dart';
 
 class AlbumViewArguments {
   final AlbumModel album;
@@ -19,26 +20,161 @@ class AlbumView extends StatelessWidget {
   Widget build(BuildContext context) {
     final AlbumViewArguments args = ModalRoute.of(context).settings.arguments;
     final ServerBloc bloc = context.bloc();
+    final Api api = bloc.getApi();
 
     return Scaffold(
-      appBar: AppBar(
-          title: Text(args.album.title),
+        appBar: AppBar(
+          backgroundColor: Colors.black54,
           leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context))),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => bloc.getApi().queueAlbum(args.album.cursor),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView(
-              children: args.album.tracks
-                  .map<Widget>((t) => TrackListItem(t))
-                  .toList(),
-            ),
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        backgroundColor: Colors.black54,
+        body: Column(children: <Widget>[
+          FutureBuilder(
+            future: api.fetchAlbum(args.album.cursor),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Expanded(
+                    child: ListView(children: [
+                  AlbumHeader(api, snapshot.data),
+                  ...snapshot.data.tracks
+                      .map<Widget>((t) => ListTile(
+                            title: Text(t.title),
+                            onTap: () => api.queueTrack(t.cursor),
+                          ))
+                      .toList(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0)
+                        .add(EdgeInsets.only(bottom: 8)),
+                    child: Text('${snapshot.data.tracks.length} Tracks',
+                        style: TextStyle(color: Colors.white54),
+                        textAlign: TextAlign.center),
+                  )
+                ]));
+              }
+              return Expanded(
+                  child: ListView(children: [
+                AlbumHeader(api, args.album),
+                LinearProgressIndicator()
+              ]));
+            },
           ),
           RusticPlayerBar()
+        ]));
+  }
+}
+
+class AlbumHeader extends StatelessWidget {
+  final Api api;
+  final AlbumModel album;
+
+  const AlbumHeader(this.api, this.album, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                  flex: 2,
+                  child: Container(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: album.coverart != null
+                          ? ClipRRect(
+                              borderRadius: const BorderRadius.all(
+                                  const Radius.circular(4)),
+                              child: Hero(
+                                  tag: album.cursor,
+                                  child: Image(
+                                      image:
+                                          api.fetchCoverart(album.coverart))),
+                            )
+                          : Container())),
+              Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(album.title, style: TextStyle(fontSize: 20)),
+                        Text(album.artist?.name ?? '',
+                            style:
+                                TextStyle(fontSize: 14, color: Colors.white54)),
+                        LibraryButton(this.api, this.album)
+                      ],
+                    ),
+                  )),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class LibraryButton extends StatefulWidget {
+  final AlbumModel album;
+  final Api api;
+
+  const LibraryButton(
+    this.api,
+    this.album, {
+    Key key,
+  }) : super(key: key);
+
+  @override
+  _LibraryButtonState createState() => _LibraryButtonState(album.inLibrary);
+}
+
+class _LibraryButtonState extends State<LibraryButton> {
+  bool inLibrary;
+
+  _LibraryButtonState(this.inLibrary);
+
+  @override
+  Widget build(BuildContext context) {
+    if (inLibrary) {
+      return OutlineButton(
+          onPressed: () {
+            this.setState(() {
+              this.inLibrary = false;
+            });
+          },
+          padding: const EdgeInsets.all(4),
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Icon(Icons.check),
+              ),
+              Text('In Library'),
+            ],
+          ));
+    }
+    return OutlineButton(
+      onPressed: () {
+        widget.api
+            .addAlbumToLibrary(widget.album)
+            .then((value) => this.setState(() {
+                  this.inLibrary = true;
+                }));
+      },
+      padding: const EdgeInsets.all(4),
+      color: Colors.deepOrange,
+      child: Row(
+        children: <Widget>[
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Icon(Icons.add)),
+          Text('Add to Library')
         ],
       ),
     );

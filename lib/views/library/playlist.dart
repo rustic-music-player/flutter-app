@@ -28,8 +28,10 @@ class PlaylistView extends StatelessWidget {
               icon: Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context))),
       floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.playlist_play),
         onPressed: () => bloc.getApi().queuePlaylist(args.playlist.cursor),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       body: Column(
         children: <Widget>[
           Expanded(child: TrackList(tracks: args.playlist.tracks)),

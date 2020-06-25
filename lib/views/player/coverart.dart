@@ -16,13 +16,26 @@ class PlayerCoverArt extends StatelessWidget {
           padding: const EdgeInsets.all(32),
           child: AspectRatio(
             aspectRatio: 1,
-            child: ClipRRect(
-                borderRadius: const BorderRadius.all(const Radius.circular(4)),
-                child: Image(
-                  key: Key(state.track.coverart),
-                  image: bloc.getApi().fetchCoverart(state.track.coverart),
-                  fit: BoxFit.contain,
-                )),
+            child: Container(
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(
+                    color: Colors.black26,
+                    spreadRadius: 5,
+                    blurRadius: 5,
+                    offset: Offset(0, 2))
+              ]),
+              child: ClipRRect(
+                  borderRadius:
+                      const BorderRadius.all(const Radius.circular(4)),
+                  child: Hero(
+                    tag: 'now-playing',
+                    child: Image(
+                      key: Key(state.track.coverart),
+                      image: bloc.getApi().fetchCoverart(state.track.coverart),
+                      fit: BoxFit.contain,
+                    ),
+                  )),
+            ),
           ),
         );
       },

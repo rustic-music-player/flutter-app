@@ -11,6 +11,10 @@ import 'package:rustic/api/models/track.dart';
 abstract class Api {
   Future<List<AlbumModel>> fetchAlbums();
 
+  Future<AlbumModel> fetchAlbum(String cursor);
+
+  Future<void> addAlbumToLibrary(AlbumModel album);
+
   Future<List<ArtistModel>> fetchArtists();
 
   Future<List<TrackModel>> fetchTracks();
@@ -46,4 +50,6 @@ abstract class Api {
   Stream<SocketMessage> messages();
 
   Future<String> getLocalCoverart(TrackModel track);
+
+  Future<void> setRepeat(RepeatMode repeat);
 }

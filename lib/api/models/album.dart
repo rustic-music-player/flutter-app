@@ -9,12 +9,25 @@ class AlbumModel {
   final String title;
   final String coverart;
   final String cursor;
+  final String provider;
+  final bool inLibrary;
   final ArtistModel artist;
   final List<TrackModel> tracks;
 
   AlbumModel(
-      {this.cursor, this.title, this.coverart, this.tracks, this.artist});
+      {this.cursor,
+      this.title,
+      this.coverart,
+      this.provider,
+      this.tracks,
+      this.artist,
+      this.inLibrary});
 
   factory AlbumModel.fromJson(Map<String, dynamic> json) =>
       _$AlbumModelFromJson(json);
+
+  @override
+  String toString() {
+    return 'AlbumModel { title: $title, coverart: $coverart, cursor: $cursor, artist: $artist, tracks: $tracks, inLibrary: $inLibrary }';
+  }
 }
