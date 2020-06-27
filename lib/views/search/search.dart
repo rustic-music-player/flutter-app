@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,7 +66,7 @@ class SearchResultView extends StatelessWidget {
           () => Navigator.pushNamed(context, SearchAlbumView.routeName,
               arguments: SearchAlbumArguments(results.albums, query))));
       widgets.add(AlbumList(
-        albums: results.albums.sublist(0, MAX_ALBUMS),
+        albums: results.albums.sublist(0, min(results.albums.length, MAX_ALBUMS)),
       ));
     }
   }
@@ -76,7 +78,7 @@ class SearchResultView extends StatelessWidget {
           () => Navigator.pushNamed(context, SearchPlaylistView.routeName,
               arguments: SearchPlaylistArguments(results.playlists, query))));
       widgets.add(PlaylistList(
-        playlists: results.playlists.sublist(0, MAX_PLAYLISTS),
+        playlists: results.playlists.sublist(0, min(results.playlists.length, MAX_PLAYLISTS)),
       ));
     }
   }
