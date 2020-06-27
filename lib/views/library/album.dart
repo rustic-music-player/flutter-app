@@ -153,11 +153,11 @@ class _LibraryButtonState extends State<LibraryButton> {
   Widget build(BuildContext context) {
     if (inLibrary) {
       return OutlineButton(
-          onPressed: () {
-            this.setState(() {
-              this.inLibrary = false;
-            });
-          },
+          onPressed: () => widget.api
+              .removeAlbumFromLibrary(widget.album)
+              .then((value) => this.setState(() {
+                    this.inLibrary = false;
+                  })),
           padding: const EdgeInsets.all(4),
           child: Row(
             children: <Widget>[
@@ -170,13 +170,13 @@ class _LibraryButtonState extends State<LibraryButton> {
           ));
     }
     return OutlineButton(
-      onPressed: () {
-        widget.api
-            .addAlbumToLibrary(widget.album)
-            .then((value) => this.setState(() {
-                  this.inLibrary = true;
-                }));
-      },
+      onPressed: () =>
+          widget.api
+              .addAlbumToLibrary(widget.album)
+              .then((value) =>
+              this.setState(() {
+                this.inLibrary = true;
+              })),
       padding: const EdgeInsets.all(4),
       color: Colors.deepOrange,
       child: Row(

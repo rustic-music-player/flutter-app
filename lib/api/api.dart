@@ -15,6 +15,8 @@ abstract class Api {
 
   Future<void> addAlbumToLibrary(AlbumModel album);
 
+  Future<void> removeAlbumFromLibrary(AlbumModel album);
+
   Future<List<ArtistModel>> fetchArtists();
 
   Future<List<TrackModel>> fetchTracks();

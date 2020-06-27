@@ -81,6 +81,15 @@ class HttpApi implements Api {
   }
 
   @override
+  Future<void> removeAlbumFromLibrary(AlbumModel album) async {
+    var res = await client.delete('$apiUrl/library/albums/${album.cursor}');
+
+    if (res.statusCode >= 400) {
+      throw Exception("Invalid status code ${res.statusCode}");
+    }
+  }
+
+  @override
   Future<List<ArtistModel>> fetchArtists() async {
     var list = await fetchGeneric('library/artists');
 
