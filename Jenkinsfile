@@ -18,8 +18,8 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'flutter build apk'
-                archiveArtifacts artifacts: 'build/app/outputs/**/*.apk', fingerprint: true
+                sh 'flutter build apk --target-platform android-arm,android-arm64,android-x64 --split-per-abi'
+                archiveArtifacts artifacts: 'build/app/outputs/apk/release/*.apk', fingerprint: true
             }
 
             post {
