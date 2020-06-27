@@ -86,17 +86,27 @@ class AlbumHeader extends StatelessWidget {
                   flex: 2,
                   child: Container(
                       padding: const EdgeInsets.only(right: 16.0),
-                      child: album.coverart != null
-                          ? ClipRRect(
-                              borderRadius: const BorderRadius.all(
-                                  const Radius.circular(4)),
-                              child: Hero(
-                                  tag: album.cursor,
-                                  child: Image(
-                                      image:
-                                          api.fetchCoverart(album.coverart))),
-                            )
-                          : Container())),
+                      child: FlatButton(
+                        padding: const EdgeInsets.all(0),
+                        onPressed: () => api.queueAlbum(album.cursor),
+                        child: Stack(
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              album.coverart != null
+                                  ? ClipRRect(
+                                      borderRadius: const BorderRadius.all(
+                                          const Radius.circular(4)),
+                                      child: Hero(
+                                          tag: album.cursor,
+                                          child: Image(
+                                              image: api.fetchCoverart(
+                                                  album.coverart))),
+                                    )
+                                  : Container(),
+                              Icon(Icons.play_circle_filled,
+                                  size: 64, color: Colors.white70)
+                            ]),
+                      ))),
               Expanded(
                   flex: 3,
                   child: Padding(
