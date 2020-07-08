@@ -28,7 +28,7 @@ void main() async {
   var notificationsService = NotificationsService();
   await notificationsService.setup();
   var prefs = await SharedPreferences.getInstance();
-  runApp(MyApp(
+  runApp(RusticApp(
       notificationsService: notificationsService, sharedPreferences: prefs));
 }
 
