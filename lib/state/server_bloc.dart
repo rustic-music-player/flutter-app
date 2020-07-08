@@ -91,8 +91,12 @@ class ServerBloc extends Bloc<ServerMsg, ServerState> {
   @override
   Stream<ServerState> mapEventToState(ServerMsg event) async* {
     if (event is ServerAddedMsg) {
+      var current = state.current;
+      if (state.servers.length == 0) {
+        current = event.server;
+      }
       yield ServerState(
-          current: state.current, servers: [...state.servers, event.server]);
+          current: current, servers: [...state.servers, event.server]);
     }
     if (event is ServerSelectedMsg) {
       var current =
@@ -104,7 +108,7 @@ class ServerBloc extends Bloc<ServerMsg, ServerState> {
 
   ServerState load() {
     if (!sharedPreferences.containsKey('servers')) {
-      return DEFAULT_STATE;
+      return ServerState(servers: [], current: null);
     }
     List<ServerConfiguration> servers = List();
     var serverNames = sharedPreferences.getStringList('servers');
@@ -144,7 +148,7 @@ class ServerBloc extends Bloc<ServerMsg, ServerState> {
   }
 
   Stream<SocketMessage> events() {
-    return this.asyncExpand((event) => event.current.getApi().messages());
+    return this.asyncExpand((event) => event.current.getApi()?.messages());
   }
 
   Api getApi() {

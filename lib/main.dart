@@ -12,6 +12,7 @@ import 'package:rustic/views/library/artists.dart';
 import 'package:rustic/views/library/playlist.dart';
 import 'package:rustic/views/library/playlists.dart';
 import 'package:rustic/views/library/tracks.dart';
+import 'package:rustic/views/onboarding/onboarding.dart';
 import 'package:rustic/views/player/player.dart';
 import 'package:rustic/views/player/queue.dart';
 import 'package:rustic/views/search/albums.dart';
@@ -31,13 +32,12 @@ void main() async {
       notificationsService: notificationsService, sharedPreferences: prefs));
 }
 
-class MyApp extends StatelessWidget {
+class RusticApp extends StatelessWidget {
   final NotificationsService notificationsService;
   final SharedPreferences sharedPreferences;
 
-  MyApp({this.notificationsService, this.sharedPreferences});
+  RusticApp({this.notificationsService, this.sharedPreferences});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -62,38 +62,60 @@ class MyApp extends StatelessWidget {
             return bloc;
           }),
           BlocProvider(
-            create: (BuildContext context) => SearchBloc(
-                serverBloc: context.bloc(), providerBloc: context.bloc()),
+            create: (BuildContext context) =>
+                SearchBloc(
+                    serverBloc: context.bloc(), providerBloc: context.bloc()),
           ),
         ],
-        child: BlocListener<CurrentMediaBloc, Playing>(
-          listener: (context, state) {
-            ServerBloc bloc = context.bloc();
-            this.notificationsService.showNotification(bloc.getApi(), state);
+        child: BlocBuilder<ServerBloc, ServerState>(
+          builder: (context, state) {
+            if (state.current == null) {
+              return Onboarding();
+            }
+            return AppShell(notificationsService: notificationsService);
           },
-          child: MaterialApp(
-            title: 'Rustic',
-            theme: ThemeData(
-                brightness: Brightness.dark,
-                primarySwatch: Colors.blueGrey,
-                accentColor: Colors.deepOrangeAccent,
-                visualDensity: VisualDensity.adaptivePlatformDensity),
-            initialRoute: AlbumsView.routeName,
-            routes: {
-              AlbumsView.routeName: (context) => AlbumsView(),
-              ArtistsView.routeName: (context) => ArtistsView(),
-              TracksView.routeName: (context) => TracksView(),
-              AlbumView.routeName: (context) => AlbumView(),
-              PlaylistsView.routeName: (context) => PlaylistsView(),
-              PlaylistView.routeName: (context) => PlaylistView(),
-              SearchView.routeName: (context) => SearchView(),
-              SearchAlbumView.routeName: (context) => SearchAlbumView(),
-              SearchPlaylistView.routeName: (context) => SearchPlaylistView(),
-              PlayerView.routeName: (context) => PlayerView(),
-              QueueView.routeName: (context) => QueueView(),
-              ServersView.routeName: (context) => ServersView()
-            },
-          ),
         ));
+  }
+}
+
+class AppShell extends StatelessWidget {
+  const AppShell({
+    Key key,
+    @required this.notificationsService,
+  }) : super(key: key);
+
+  final NotificationsService notificationsService;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<CurrentMediaBloc, Playing>(
+      listener: (context, state) {
+        ServerBloc bloc = context.bloc();
+        this.notificationsService.showNotification(bloc.getApi(), state);
+      },
+      child: MaterialApp(
+        title: 'Rustic',
+        theme: ThemeData(
+            brightness: Brightness.dark,
+            primarySwatch: Colors.blueGrey,
+            accentColor: Colors.deepOrangeAccent,
+            visualDensity: VisualDensity.adaptivePlatformDensity),
+        initialRoute: AlbumsView.routeName,
+        routes: {
+          AlbumsView.routeName: (context) => AlbumsView(),
+          ArtistsView.routeName: (context) => ArtistsView(),
+          TracksView.routeName: (context) => TracksView(),
+          AlbumView.routeName: (context) => AlbumView(),
+          PlaylistsView.routeName: (context) => PlaylistsView(),
+          PlaylistView.routeName: (context) => PlaylistView(),
+          SearchView.routeName: (context) => SearchView(),
+          SearchAlbumView.routeName: (context) => SearchAlbumView(),
+          SearchPlaylistView.routeName: (context) => SearchPlaylistView(),
+          PlayerView.routeName: (context) => PlayerView(),
+          QueueView.routeName: (context) => QueueView(),
+          ServersView.routeName: (context) => ServersView()
+        },
+      ),
+    );
   }
 }
