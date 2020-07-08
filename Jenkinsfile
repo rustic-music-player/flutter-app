@@ -19,7 +19,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'flutter build apk --target-platform android-arm,android-arm64,android-x64 --split-per-abi'
-                archiveArtifacts artifacts: 'build/app/outputs/apk/release/*.apk', fingerprint: true
+                step([$class: 'SignApksBuilder', apksToSign: 'build/app/outputs/apk/release/*-unsigned.apk', keyAlias: 'rustic release key', keyStoreId: 'android-keystore'])
             }
 
             post {
