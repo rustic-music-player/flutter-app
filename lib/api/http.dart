@@ -4,13 +4,13 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
 import 'package:http_logger/http_logger.dart';
 import 'package:http_middleware/http_middleware.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/artist.dart';
+import 'package:rustic/api/models/open_result.dart';
 import 'package:rustic/api/models/player.dart';
 import 'package:rustic/api/models/playlist.dart';
 import 'package:rustic/api/models/provider.dart';
@@ -233,5 +233,15 @@ class HttpApi implements Api {
     var file = File(filePath);
     await file.writeAsBytes(response.bodyBytes);
     return filePath;
+  }
+
+  @override
+  Future<OpenResultModel> resolveShareUrl(Uri uri) async {
+    var cursor = base64Encode(utf8.encode(uri.toString()));
+    var res = await fetchGeneric('open/$cursor');
+
+    var resultModel = OpenResultModel.fromJson(res);
+    log('resolveShareUrl $uri => $resultModel');
+    return resultModel;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/artist.dart';
+import 'package:rustic/api/models/open_result.dart';
 import 'package:rustic/api/models/player.dart';
 import 'package:rustic/api/models/playlist.dart';
 import 'package:rustic/api/models/provider.dart';
@@ -54,4 +55,6 @@ abstract class Api {
   Future<String> getLocalCoverart(TrackModel track);
 
   Future<void> setRepeat(RepeatMode repeat);
+
+  Future<OpenResultModel> resolveShareUrl(Uri uri);
 }

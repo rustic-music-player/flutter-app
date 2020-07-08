@@ -114,7 +114,7 @@ class AlbumHeader extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(album.title, style: TextStyle(fontSize: 20)),
+                        Text(album.title ?? '', style: TextStyle(fontSize: 20)),
                         Text(album.artist?.name ?? '',
                             style:
                                 TextStyle(fontSize: 14, color: Colors.white54)),
@@ -141,7 +141,8 @@ class LibraryButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _LibraryButtonState createState() => _LibraryButtonState(album.inLibrary);
+  _LibraryButtonState createState() =>
+      _LibraryButtonState(album.inLibrary ?? false);
 }
 
 class _LibraryButtonState extends State<LibraryButton> {
