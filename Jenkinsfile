@@ -12,6 +12,7 @@ pipeline {
 
     environment {
         PUB_CACHE='/build_cache/dart'
+        ANDROID_HOME='/opt/android-sdk'
         HOME='.'
     }
 
