@@ -12,7 +12,6 @@ pipeline {
 
     environment {
         PUB_CACHE='/build_cache/dart'
-        ANDROID_HOME='/opt/android-sdk'
         HOME='.'
     }
 
@@ -20,7 +19,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'flutter build apk --target-platform android-arm,android-arm64,android-x64 --split-per-abi'
-                step([$class: 'SignApksBuilder', apksToSign: 'build/app/outputs/apk/release/*-unsigned.apk', keyAlias: 'rustic release key', keyStoreId: 'android-keystore'])
+                step([$class: 'SignApksBuilder', androidHome: '/opt/android-sdk', apksToSign: 'build/app/outputs/apk/release/*-unsigned.apk', keyAlias: 'rustic release key', keyStoreId: 'android-keystore'])
             }
 
             post {
