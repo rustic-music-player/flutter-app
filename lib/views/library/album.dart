@@ -171,11 +171,9 @@ class _LibraryButtonState extends State<LibraryButton> {
           ));
     }
     return OutlineButton(
-      onPressed: () =>
-          widget.api
-              .addAlbumToLibrary(widget.album)
-              .then((value) =>
-              this.setState(() {
+      onPressed: () => widget.api
+          .addAlbumToLibrary(widget.album)
+          .then((value) => this.setState(() {
                 this.inLibrary = true;
               })),
       padding: const EdgeInsets.all(4),

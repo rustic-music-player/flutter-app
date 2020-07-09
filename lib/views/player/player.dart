@@ -22,7 +22,7 @@ class PlayerView extends StatelessWidget {
           PlayerVolumeControl(),
         ],
       );
-    }else {
+    } else {
       body = Row(
         children: [
           PlayerCoverArt(),
@@ -39,17 +39,16 @@ class PlayerView extends StatelessWidget {
       );
     }
     return Scaffold(
-      appBar: AppBar(
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 32, 32, 32),
+          leading: ClosePlayerButton(),
+          title: const Text("Now Playing"),
+          centerTitle: true,
+          actions: <Widget>[PlayerFavoriteButton(), PlayerQueueButton(false)],
+          elevation: 0,
+        ),
         backgroundColor: const Color.fromARGB(255, 32, 32, 32),
-        leading: ClosePlayerButton(),
-        title: const Text("Now Playing"),
-        centerTitle: true,
-        actions: <Widget>[PlayerFavoriteButton(), PlayerQueueButton(false)],
-        elevation: 0,
-      ),
-      backgroundColor: const Color.fromARGB(255, 32, 32, 32),
-      body: body
-    );
+        body: body);
   }
 }
 

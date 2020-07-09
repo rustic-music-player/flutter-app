@@ -26,7 +26,8 @@ class RusticPlayerBar extends StatelessWidget {
                   child: Hero(
                     tag: 'now-playing',
                     child: Image(
-                        image: bloc.getApi().fetchCoverart(state.track.coverart)),
+                        image:
+                            bloc.getApi().fetchCoverart(state.track.coverart)),
                   ),
                 ),
                 CurrentlyPlayingText(state.track),

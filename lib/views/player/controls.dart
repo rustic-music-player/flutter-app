@@ -86,7 +86,7 @@ class PlayPauseButton extends StatelessWidget {
     ServerBloc server = context.bloc();
     return BlocBuilder<CurrentMediaBloc, Playing>(
       condition: (prev, next) =>
-      prev.isPlaying != next.isPlaying ||
+          prev.isPlaying != next.isPlaying ||
           prev.primaryColor != next.primaryColor,
       builder: (context, state) {
         return Padding(
@@ -100,8 +100,7 @@ class PlayPauseButton extends StatelessWidget {
                   color: Colors.white,
                 ),
                 iconSize: 56,
-                onPressed: () =>
-                state.isPlaying
+                onPressed: () => state.isPlaying
                     ? server.getApi().playerPause()
                     : server.getApi().playerPlay(),
               ),
@@ -121,26 +120,25 @@ class PlayerVolumeControl extends StatelessWidget {
     CurrentMediaBloc bloc = context.bloc();
     return BlocBuilder<CurrentMediaBloc, Playing>(
       condition: (prev, next) =>
-      prev.volume != next.volume || prev.primaryColor != next.primaryColor,
-      builder: (context, state) =>
-          Padding(
-            child: Row(children: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.volume_down),
-                  onPressed: () => bloc.add(SetVolume(state.volume - 0.1))),
-              Expanded(
-                  child: Slider(
-                    value: state.volume,
-                    divisions: 100,
-                    activeColor: state.primaryColor,
-                    onChanged: (volume) => bloc.add(SetVolume(volume)),
-                  )),
-              IconButton(
-                  icon: Icon(Icons.volume_up),
-                  onPressed: () => bloc.add(SetVolume(state.volume + 0.1))),
-            ]),
-            padding: const EdgeInsets.fromLTRB(32, 0, 32, 16),
-          ),
+          prev.volume != next.volume || prev.primaryColor != next.primaryColor,
+      builder: (context, state) => Padding(
+        child: Row(children: <Widget>[
+          IconButton(
+              icon: Icon(Icons.volume_down),
+              onPressed: () => bloc.add(SetVolume(state.volume - 0.1))),
+          Expanded(
+              child: Slider(
+            value: state.volume,
+            divisions: 100,
+            activeColor: state.primaryColor,
+            onChanged: (volume) => bloc.add(SetVolume(volume)),
+          )),
+          IconButton(
+              icon: Icon(Icons.volume_up),
+              onPressed: () => bloc.add(SetVolume(state.volume + 0.1))),
+        ]),
+        padding: const EdgeInsets.fromLTRB(32, 0, 32, 16),
+      ),
     );
   }
 }

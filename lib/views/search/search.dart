@@ -66,7 +66,8 @@ class SearchResultView extends StatelessWidget {
           () => Navigator.pushNamed(context, SearchAlbumView.routeName,
               arguments: SearchAlbumArguments(results.albums, query))));
       widgets.add(AlbumList(
-        albums: results.albums.sublist(0, min(results.albums.length, MAX_ALBUMS)),
+        albums:
+            results.albums.sublist(0, min(results.albums.length, MAX_ALBUMS)),
       ));
     }
   }
@@ -78,7 +79,8 @@ class SearchResultView extends StatelessWidget {
           () => Navigator.pushNamed(context, SearchPlaylistView.routeName,
               arguments: SearchPlaylistArguments(results.playlists, query))));
       widgets.add(PlaylistList(
-        playlists: results.playlists.sublist(0, min(results.playlists.length, MAX_PLAYLISTS)),
+        playlists: results.playlists
+            .sublist(0, min(results.playlists.length, MAX_PLAYLISTS)),
       ));
     }
   }

@@ -125,8 +125,8 @@ class _AppShellState extends State<AppShell> {
                   }
                   if (state.type == 'playlist') {
                     // TODO: load full playlist
-                    PlaylistModel playlist = PlaylistModel(
-                        cursor: state.cursor);
+                    PlaylistModel playlist =
+                        PlaylistModel(cursor: state.cursor);
                     _navigatorKey.currentState.pushNamed(PlaylistView.routeName,
                         arguments: PlaylistViewArguments(playlist));
                   }
