@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/state/server_bloc.dart';
+import 'package:rustic/ui/menu.dart';
 import 'package:rustic/ui/provider-selection.dart';
 import 'package:rustic/views/library/album.dart';
 
@@ -18,6 +19,7 @@ class AlbumCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ServerBloc bloc = context.bloc();
+    var api = bloc.getApi();
     var provider = providerMap[album.provider];
     return ConstrainedBox(
         constraints: BoxConstraints(
@@ -25,13 +27,25 @@ class AlbumCard extends StatelessWidget {
             maxWidth: min(250, MediaQuery.of(context).size.width / 2)),
         child: FutureBuilder(
           future: PaletteGenerator.fromImageProvider(
-              bloc.getApi().fetchCoverart(this.album.coverart)),
+              api.fetchCoverart(this.album.coverart)),
           builder: (context, AsyncSnapshot<PaletteGenerator> snapshot) => Card(
             color: snapshot.data?.vibrantColor?.color,
-            child: FlatButton(
-              padding: const EdgeInsets.all(0),
-              onPressed: () => Navigator.pushNamed(context, AlbumView.routeName,
+            child: MenuContainer(
+              onTap: () => Navigator.pushNamed(context, AlbumView.routeName,
                   arguments: AlbumViewArguments(this.album)),
+              items: [
+                MenuItem('Queue Album',
+                    icon: Icons.queue,
+                    onSelect: () => api.queueAlbum(album.cursor)),
+                MenuItem('Add to Playlist', icon: Icons.playlist_add),
+                album.inLibrary
+                    ? MenuItem('Remove from Library',
+                        icon: Icons.close,
+                        onSelect: () => api.removeAlbumFromLibrary(album))
+                    : MenuItem('Add to Library',
+                        icon: Icons.add,
+                        onSelect: () => api.addAlbumToLibrary(album))
+              ],
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
