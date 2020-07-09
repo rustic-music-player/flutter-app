@@ -13,7 +13,7 @@ class NotificationsService {
   }
 
   Future<void> setup() async {
-    var androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    var androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
     var settings = InitializationSettings(androidSettings, null);
     await notificationsPlugin.initialize(settings);
   }
