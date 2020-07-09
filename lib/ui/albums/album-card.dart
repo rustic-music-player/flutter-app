@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,8 +19,10 @@ class AlbumCard extends StatelessWidget {
   Widget build(BuildContext context) {
     ServerBloc bloc = context.bloc();
     var provider = providerMap[album.provider];
-    return FractionallySizedBox(
-        widthFactor: .5,
+    return ConstrainedBox(
+        constraints: BoxConstraints(
+            minWidth: 100,
+            maxWidth: min(250, MediaQuery.of(context).size.width / 2)),
         child: FutureBuilder(
           future: PaletteGenerator.fromImageProvider(
               bloc.getApi().fetchCoverart(this.album.coverart)),
@@ -30,51 +34,51 @@ class AlbumCard extends StatelessWidget {
                   arguments: AlbumViewArguments(this.album)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  AspectRatio(
-                      aspectRatio: 1,
-                      child: album.coverart == null
-                          ? Container(
+                    children: <Widget>[
+                      AspectRatio(
+                          aspectRatio: 1,
+                          child: album.coverart == null
+                              ? Container(
                               color: Colors.white10,
                               child: Icon(
                                 Icons.album,
                                 size: 96,
                               ))
-                          : Hero(
-                              tag: album.cursor,
-                              child: Image(
-                                image:
-                                    bloc.getApi().fetchCoverart(album.coverart),
+                              : Hero(
+                            tag: album.cursor,
+                            child: Image(
+                              image:
+                              bloc.getApi().fetchCoverart(album.coverart),
+                            ),
+                          )),
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        height: 64,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(album.title, maxLines: 2),
+                                  Text(album.artist?.name ?? '',
+                                      maxLines: 1,
+                                      style: TextStyle(color: Colors.white70))
+                                ],
                               ),
-                            )),
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    height: 64,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(album.title, maxLines: 2),
-                              Text(album.artist?.name ?? '',
-                                  maxLines: 1,
-                                  style: TextStyle(color: Colors.white70))
-                            ],
-                          ),
+                            ),
+                            Icon(
+                              provider?.icon,
+                              color: provider?.color,
+                            )
+                          ],
                         ),
-                        Icon(
-                          provider?.icon,
-                          color: provider?.color,
-                        )
-                      ],
-                    ),
-                  )
-                ],
+                      )
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
         ));
   }
 }

@@ -11,6 +11,33 @@ class PlayerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool mobile = MediaQuery.of(context).size.shortestSide < 600;
+    var body;
+    if (mobile) {
+      body = Column(
+        children: <Widget>[
+          PlayerCoverArt(),
+          PlayerMetadata(),
+          PlayerControls(),
+          PlayerVolumeControl(),
+        ],
+      );
+    }else {
+      body = Row(
+        children: [
+          PlayerCoverArt(),
+          Expanded(
+            child: Column(
+              children: [
+                PlayerMetadata(),
+                PlayerControls(),
+                PlayerVolumeControl()
+              ],
+            ),
+          )
+        ],
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 32, 32, 32),
@@ -21,14 +48,7 @@ class PlayerView extends StatelessWidget {
         elevation: 0,
       ),
       backgroundColor: const Color.fromARGB(255, 32, 32, 32),
-      body: Column(
-        children: <Widget>[
-          PlayerCoverArt(),
-          PlayerMetadata(),
-          PlayerControls(),
-          PlayerVolumeControl(),
-        ],
-      ),
+      body: body
     );
   }
 }
