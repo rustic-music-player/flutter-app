@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rustic/state/media_bloc.dart';
 
@@ -9,10 +11,15 @@ class NotificationsService {
   FlutterLocalNotificationsPlugin notificationsPlugin;
 
   NotificationsService() {
-    notificationsPlugin = FlutterLocalNotificationsPlugin();
+    if (NotificationsService.isSupported) {
+      notificationsPlugin = FlutterLocalNotificationsPlugin();
+    }
   }
 
   Future<void> setup() async {
+    if (NotificationsService.isSupported) {
+      return;
+    }
     var androidSettings =
         AndroidInitializationSettings('@mipmap/launcher_icon');
     var settings = InitializationSettings(androidSettings, null);
@@ -20,6 +27,9 @@ class NotificationsService {
   }
 
   void showNotification(Api api, Playing playing) async {
+    if (NotificationsService.isSupported) {
+      return;
+    }
     if (playing.track == null) {
       notificationsPlugin.cancel(0);
     } else {
@@ -34,4 +44,6 @@ class NotificationsService {
           0, playing.track.title, playing.track.artist.name, platformSpecifics);
     }
   }
+
+  static final isSupported = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 }
