@@ -11,6 +11,7 @@ class AlbumModel {
   final String cursor;
   final String provider;
   final bool inLibrary;
+  final bool explicit;
   final ArtistModel artist;
   final List<TrackModel> tracks;
 
@@ -21,6 +22,7 @@ class AlbumModel {
       this.provider,
       this.tracks,
       this.artist,
+      this.explicit,
       this.inLibrary});
 
   factory AlbumModel.fromJson(Map<String, dynamic> json) =>
@@ -28,6 +30,6 @@ class AlbumModel {
 
   @override
   String toString() {
-    return 'AlbumModel { title: $title, coverart: $coverart, cursor: $cursor, artist: $artist, tracks: $tracks, inLibrary: $inLibrary }';
+    return 'AlbumModel { title: $title, coverart: $coverart, cursor: $cursor, artist: $artist, tracks: $tracks, inLibrary: $inLibrary, explicit: $explicit }';
   }
 }

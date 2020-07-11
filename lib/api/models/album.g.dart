@@ -19,6 +19,7 @@ AlbumModel _$AlbumModelFromJson(Map<String, dynamic> json) {
     artist: json['artist'] == null
         ? null
         : ArtistModel.fromJson(json['artist'] as Map<String, dynamic>),
+    explicit: json['explicit'] as bool,
     inLibrary: json['inLibrary'] as bool,
   );
 }
@@ -30,6 +31,7 @@ Map<String, dynamic> _$AlbumModelToJson(AlbumModel instance) =>
       'cursor': instance.cursor,
       'provider': instance.provider,
       'inLibrary': instance.inLibrary,
+      'explicit': instance.explicit,
       'artist': instance.artist,
       'tracks': instance.tracks,
     };

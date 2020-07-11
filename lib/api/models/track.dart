@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:json_annotation/json_annotation.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/artist.dart';
+import 'package:rustic/api/models/position.dart';
+import 'package:rustic/api/models/rating.dart';
 
 part 'track.g.dart';
 
@@ -13,6 +17,8 @@ class TrackModel {
   final AlbumModel album;
   final ArtistModel artist;
   final int duration;
+  final Rating rating;
+  final PositionModel position;
 
   TrackModel(
       {this.title,
@@ -21,8 +27,15 @@ class TrackModel {
       this.coverart,
       this.duration,
       this.artist,
-      this.album});
+      this.album,
+      this.rating,
+      this.position});
 
   factory TrackModel.fromJson(Map<String, dynamic> json) =>
       _$TrackModelFromJson(json);
+
+  bool get isFavorite {
+    log('$rating');
+    return this.rating.type == Rating.Like;
+  }
 }

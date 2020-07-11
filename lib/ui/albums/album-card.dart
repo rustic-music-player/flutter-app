@@ -49,22 +49,34 @@ class AlbumCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  AspectRatio(
-                      aspectRatio: 1,
-                      child: album.coverart == null
-                          ? Container(
-                              color: Colors.white10,
-                              child: Icon(
-                                Icons.album,
-                                size: 96,
-                              ))
-                          : Hero(
-                              tag: album.cursor,
-                              child: Image(
-                                image:
-                                    bloc.getApi().fetchCoverart(album.coverart),
-                              ),
-                            )),
+                  Stack(children: [
+                    AspectRatio(
+                        aspectRatio: 1,
+                        child: album.coverart == null
+                            ? Container(
+                                color: Colors.white10,
+                                child: Icon(
+                                  Icons.album,
+                                  size: 96,
+                                ))
+                            : Hero(
+                                tag: album.cursor,
+                                child: Image(
+                                  image: bloc
+                                      .getApi()
+                                      .fetchCoverart(album.coverart),
+                                ),
+                              )),
+                    (album.explicit ?? false)
+                        ? Container(
+                            margin: const EdgeInsets.only(left: 8),
+                            color: Colors.red,
+                            padding: const EdgeInsets.all(4),
+                            child: const Text('E',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                          )
+                        : Container(),
+                  ]),
                   Container(
                     padding: const EdgeInsets.all(8.0),
                     height: 64,

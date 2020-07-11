@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
+import 'package:rustic/api/models/track.dart';
 import 'package:rustic/state/server_bloc.dart';
 import 'package:rustic/ui/player.dart';
 
@@ -32,7 +33,7 @@ class AlbumView extends StatelessWidget {
         ),
         backgroundColor: Colors.black54,
         body: Column(children: <Widget>[
-          FutureBuilder(
+          FutureBuilder<AlbumModel>(
             future: api.fetchAlbum(args.album.cursor),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -42,6 +43,9 @@ class AlbumView extends StatelessWidget {
                   ...snapshot.data.tracks
                       .map<Widget>((t) => ListTile(
                             title: Text(t.title),
+                            subtitle: mapDuration(t),
+                            leading: CircleAvatar(
+                                child: Text(t.position?.track.toString())),
                             onTap: () => api.queueTrack(t.cursor),
                           ))
                       .toList(),
@@ -56,13 +60,23 @@ class AlbumView extends StatelessWidget {
               }
               return Expanded(
                   child: ListView(children: [
-                AlbumHeader(api, args.album),
-                LinearProgressIndicator()
-              ]));
+                    AlbumHeader(api, args.album),
+                    LinearProgressIndicator()
+                  ]));
             },
           ),
           RusticPlayerBar()
         ]));
+  }
+
+  Text mapDuration(TrackModel track) {
+    if (track.duration == null) {
+      return null;
+    }
+    var duration = Duration(seconds: track.duration);
+    var seconds = duration.inSeconds -
+        (duration.inMinutes * Duration.secondsPerMinute);
+    return Text('${duration.inMinutes}:${seconds.toString().padLeft(2, '0')}');
   }
 }
 
