@@ -178,6 +178,10 @@ class HttpApi implements Api {
     await client.post('$apiUrl/queue/track/$cursor');
   }
 
+  Future<void> selectQueueItem(int index) async {
+    await client.put('$apiUrl/queue/select/$index');
+  }
+
   @override
   NetworkImage fetchCoverart(String url) {
     if (url == null) {

@@ -46,6 +46,8 @@ abstract class Api {
 
   Future<void> queueTrack(String cursor);
 
+  Future<void> selectQueueItem(int index);
+
   NetworkImage fetchCoverart(String url);
 
   Future<List<AvailableProviderModel>> fetchProviders();

@@ -60,9 +60,9 @@ class AlbumView extends StatelessWidget {
               }
               return Expanded(
                   child: ListView(children: [
-                    AlbumHeader(api, args.album),
-                    LinearProgressIndicator()
-                  ]));
+                AlbumHeader(api, args.album),
+                LinearProgressIndicator()
+              ]));
             },
           ),
           RusticPlayerBar()
@@ -74,8 +74,8 @@ class AlbumView extends StatelessWidget {
       return null;
     }
     var duration = Duration(seconds: track.duration);
-    var seconds = duration.inSeconds -
-        (duration.inMinutes * Duration.secondsPerMinute);
+    var seconds =
+        duration.inSeconds - (duration.inMinutes * Duration.secondsPerMinute);
     return Text('${duration.inMinutes}:${seconds.toString().padLeft(2, '0')}');
   }
 }

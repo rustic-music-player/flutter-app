@@ -14,8 +14,7 @@ class Rating {
 
   Rating({this.type, this.stars});
 
-  factory Rating.fromJson(Map<String, dynamic> json) =>
-      _$RatingFromJson(json);
+  factory Rating.fromJson(Map<String, dynamic> json) => _$RatingFromJson(json);
 
   @override
   String toString() {
