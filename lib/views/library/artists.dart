@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/models/artist.dart';
 import 'package:rustic/state/server_bloc.dart';
+import 'package:rustic/ui/coverart.dart';
 import 'package:rustic/ui/drawer.dart';
 import 'package:rustic/ui/player.dart';
 import 'package:rustic/ui/search-btn.dart';
@@ -13,8 +14,8 @@ class ArtistsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ServerBloc, ServerState>(
       builder: (context, state) => FutureBuilder(
-          future: state.current.getApi().fetchArtists(),
-          builder: (context, snapshot) => Scaffold(
+          future: state.current?.getApi()?.fetchArtists(),
+          builder: (context, AsyncSnapshot<List<ArtistModel>> snapshot) => Scaffold(
               drawer: RusticDrawer(),
               appBar: AppBar(
                   title: Text('Artists'),
@@ -38,7 +39,7 @@ class ArtistsView extends StatelessWidget {
 class ArtistList extends StatelessWidget {
   final List<ArtistModel> artists;
 
-  ArtistList({this.artists});
+  ArtistList({required this.artists});
 
   @override
   Widget build(BuildContext context) {
@@ -56,17 +57,17 @@ class ArtistList extends StatelessWidget {
 class ArtistListItem extends StatelessWidget {
   final ArtistModel artist;
 
-  ArtistListItem({this.artist});
+  ArtistListItem({required this.artist});
 
   @override
   Widget build(BuildContext context) {
-    ServerBloc bloc = context.bloc();
+    ServerBloc bloc = context.read();
     return ListTile(
       title: Text(artist.name),
       leading: CircleAvatar(
           child: artist.image == null
               ? Icon(Icons.person)
-              : Image(image: bloc.getApi().fetchCoverart(artist.image))),
+              : Coverart(artist: artist)),
     );
   }
 }

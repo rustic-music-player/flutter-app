@@ -7,14 +7,13 @@ part of 'provider.dart';
 // **************************************************************************
 
 AvailableProviderModel _$AvailableProviderModelFromJson(
-    Map<String, dynamic> json) {
-  return AvailableProviderModel(
-    title: json['title'] as String,
-    provider: json['provider'] as String,
-    enabled: json['enabled'] as bool,
-    authState: json['authState'],
-  );
-}
+        Map<String, dynamic> json) =>
+    AvailableProviderModel(
+      title: json['title'] as String,
+      provider: json['provider'] as String,
+      enabled: json['enabled'] as bool,
+      authState: json['authState'],
+    );
 
 Map<String, dynamic> _$AvailableProviderModelToJson(
         AvailableProviderModel instance) =>
@@ -25,11 +24,10 @@ Map<String, dynamic> _$AvailableProviderModelToJson(
       'authState': instance.authState,
     };
 
-AuthStateModel _$AuthStateModelFromJson(Map<String, dynamic> json) {
-  return AuthStateModel(
-    state: json['state'] as String,
-  );
-}
+AuthStateModel _$AuthStateModelFromJson(Map<String, dynamic> json) =>
+    AuthStateModel(
+      state: json['state'] as String,
+    );
 
 Map<String, dynamic> _$AuthStateModelToJson(AuthStateModel instance) =>
     <String, dynamic>{

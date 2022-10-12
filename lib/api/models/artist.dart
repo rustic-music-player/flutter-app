@@ -6,9 +6,9 @@ part 'artist.g.dart';
 class ArtistModel {
   final String cursor;
   final String name;
-  final String image;
+  final String? image;
 
-  ArtistModel({this.cursor, this.name, this.image});
+  ArtistModel({required this.cursor, required this.name, this.image});
 
   factory ArtistModel.fromJson(Map<String, dynamic> json) =>
       _$ArtistModelFromJson(json);

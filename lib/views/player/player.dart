@@ -54,7 +54,7 @@ class PlayerView extends StatelessWidget {
 
 class ClosePlayerButton extends StatelessWidget {
   const ClosePlayerButton({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -74,7 +74,7 @@ class PlayerQueueButton extends StatelessWidget {
 
   const PlayerQueueButton(
     this.isOpen, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -94,39 +94,39 @@ class PlayerQueueButton extends StatelessWidget {
 
 class PlayerFavoriteButton extends StatelessWidget {
   const PlayerFavoriteButton({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CurrentMediaBloc, Playing>(
       builder: (context, state) => IconButton(
-          icon: state.track.isFavorite
+          icon: state.track?.isFavorite ?? false
               ? const Icon(Icons.favorite, color: Colors.white)
-              : const Icon(Icons.favorite_border, color: Colors.white54)),
+              : const Icon(Icons.favorite_border, color: Colors.white54), onPressed: () {},),
     );
   }
 }
 
 class PlayerMetadata extends StatelessWidget {
-  PlayerMetadata({Key key}) : super(key: key);
+  PlayerMetadata({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CurrentMediaBloc, Playing>(
-      condition: (prev, next) => prev.track != next.track,
+      buildWhen: (prev, next) => prev.track != next.track,
       builder: (context, state) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Text(
-              state.track.title,
+              state.track?.title ?? "",
               style: const TextStyle(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             Text(
-              state.track.artist?.name ?? "",
+              state.track?.artist?.name ?? "",
               textAlign: TextAlign.center,
             )
           ],

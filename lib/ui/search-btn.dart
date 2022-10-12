@@ -3,7 +3,7 @@ import 'package:rustic/views/search/search.dart';
 
 class SearchButton extends StatelessWidget {
   const SearchButton({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

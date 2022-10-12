@@ -6,7 +6,7 @@ part 'player.g.dart';
 enum RepeatMode { None, Single, All }
 
 String encodeRepeatMode(RepeatMode mode) {
-  return _$RepeatModeEnumMap[mode];
+  return _$RepeatModeEnumMap[mode]!;
 }
 
 @JsonSerializable()
@@ -15,16 +15,16 @@ class PlayerModel {
   final String name;
   final bool playing;
   final double volume;
-  final TrackModel current;
+  final TrackModel? current;
   final RepeatMode repeat;
 
   PlayerModel(
-      {this.cursor,
-      this.name,
-      this.playing,
-      this.volume,
+      {required this.cursor,
+      required this.name,
+      required this.playing,
+      required this.volume,
       this.current,
-      this.repeat});
+      required this.repeat});
 
   factory PlayerModel.fromJson(Map<String, dynamic> json) =>
       _$PlayerModelFromJson(json);

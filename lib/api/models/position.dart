@@ -4,8 +4,8 @@ part 'position.g.dart';
 
 @JsonSerializable()
 class PositionModel {
-  final int track;
-  final int disc;
+  final int? track;
+  final int? disc;
 
   PositionModel({this.track, this.disc});
 

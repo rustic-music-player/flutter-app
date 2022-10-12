@@ -9,9 +9,9 @@ class AvailableProviderModel {
   final String title;
   final String provider;
   final bool enabled;
-  AuthStateModel authState;
+  late AuthStateModel authState;
 
-  AvailableProviderModel({this.title, this.provider, this.enabled, authState}) {
+  AvailableProviderModel({required this.title, required this.provider, required this.enabled, authState}) {
     this.authState = AuthStateModel.fromJson(authState);
   }
 
@@ -27,7 +27,7 @@ class AuthStateModel {
 
   final String state;
 
-  AuthStateModel({this.state});
+  AuthStateModel({required this.state});
 
   factory AuthStateModel.fromJson(Map<String, dynamic> json) =>
       _$AuthStateModelFromJson(json);

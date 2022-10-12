@@ -10,9 +10,9 @@ class Rating {
   static final Stars = 'stars';
 
   final String type;
-  final int stars;
+  final int? stars;
 
-  Rating({this.type, this.stars});
+  Rating({required this.type, this.stars});
 
   factory Rating.fromJson(Map<String, dynamic> json) => _$RatingFromJson(json);
 

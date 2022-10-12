@@ -17,7 +17,7 @@ class SearchPlaylistView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SearchPlaylistArguments args = ModalRoute.of(context).settings.arguments;
+    SearchPlaylistArguments args = ModalRoute.of(context)!.settings.arguments! as SearchPlaylistArguments;
     return BlocBuilder<SearchBloc, SearchResultModel>(
         builder: (context, state) => Scaffold(
             appBar: AppBar(

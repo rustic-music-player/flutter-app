@@ -34,7 +34,7 @@ class ProviderSelection extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 children: state.providers
                     .map((provider) => ProviderToggle(provider,
-                        providerMap[provider], state.active.contains(provider)))
+                        providerMap[provider]!, state.active.contains(provider)))
                     .toList(),
               ),
             ));
@@ -50,12 +50,12 @@ class ProviderToggle extends StatelessWidget {
     this.provider,
     this.providerStyle,
     this.active, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var bloc = context.bloc<ProviderBloc>();
+    var bloc = context.read<ProviderBloc>();
     return Padding(
       padding: EdgeInsets.all(4),
       child: Ink(

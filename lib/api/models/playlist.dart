@@ -9,7 +9,7 @@ class PlaylistModel {
   final String title;
   final List<TrackModel> tracks;
 
-  PlaylistModel({this.cursor, this.title, this.tracks});
+  PlaylistModel({required this.cursor, required this.title, required this.tracks});
 
   factory PlaylistModel.fromJson(Map<String, dynamic> json) =>
       _$PlaylistModelFromJson(json);

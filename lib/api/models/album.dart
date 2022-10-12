@@ -7,20 +7,20 @@ part 'album.g.dart';
 @JsonSerializable()
 class AlbumModel {
   final String title;
-  final String coverart;
+  final String? coverart;
   final String cursor;
-  final String provider;
-  final bool inLibrary;
-  final bool explicit;
-  final ArtistModel artist;
+  final String? provider;
+  final bool? inLibrary;
+  final bool? explicit;
+  final ArtistModel? artist;
   final List<TrackModel> tracks;
 
   AlbumModel(
-      {this.cursor,
-      this.title,
+      {required this.cursor,
+      required this.title,
       this.coverart,
       this.provider,
-      this.tracks,
+      required this.tracks,
       this.artist,
       this.explicit,
       this.inLibrary});

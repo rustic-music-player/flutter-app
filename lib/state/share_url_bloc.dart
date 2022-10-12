@@ -6,26 +6,23 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rustic/api/models/open_result.dart';
 import 'package:rustic/state/server_bloc.dart';
 
-class ShareUrlBloc extends Bloc<Uri, OpenResultModel> {
+class ShareUrlBloc extends Bloc<Uri, OpenResultModel?> {
   final ServerBloc serverBloc;
 
-  ShareUrlBloc(this.serverBloc) {
+  ShareUrlBloc(this.serverBloc): super(null) {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       ReceiveSharingIntent.getTextStreamAsUri()
           .listen((value) => this.add(value));
       ReceiveSharingIntent.getInitialTextAsUri()
-          .then((value) => this.add(value));
+          .then((value) {
+            if (value == null) {
+              return;
+            }
+            this.add(value);
+          });
     }
-  }
-
-  @override
-  OpenResultModel get initialState => OpenResultModel();
-
-  @override
-  Stream<OpenResultModel> mapEventToState(Uri event) async* {
-    if (event == null) {
-      return;
-    }
-    yield await serverBloc.getApi().resolveShareUrl(event);
+    on<Uri>((event, emit) async {
+      emit(await serverBloc.getApi()!.resolveShareUrl(event));
+    });
   }
 }

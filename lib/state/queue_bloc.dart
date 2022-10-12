@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:rustic/api/models/socket_msg.dart';
 import 'package:rustic/api/models/track.dart';
 import 'package:rustic/state/server_bloc.dart';
@@ -11,30 +12,25 @@ class FetchQueue {}
 
 class QueueBloc extends Bloc<dynamic, List<TrackModel>> {
   final ServerBloc serverBloc;
-  StreamSubscription socketSubscription;
+  late StreamSubscription socketSubscription;
 
-  QueueBloc({this.serverBloc}) {
+  QueueBloc({required this.serverBloc}): super([]) {
     socketSubscription = serverBloc.events().listen((event) {
       this.add(event);
     });
+    on((event, emit) async {
+      if (event is SocketMessage) {
+        emit(handleSocketMessage(event));
+      }else {
+        emit(await serverBloc.getApi()!.getQueue());
+      }
+    }, transformer: sequential());
   }
 
   @override
   Future<void> close() {
     socketSubscription.cancel();
     return super.close();
-  }
-
-  @override
-  List<TrackModel> get initialState => [];
-
-  @override
-  Stream<List<TrackModel>> mapEventToState(dynamic event) async* {
-    if (event is SocketMessage) {
-      yield handleSocketMessage(event);
-    } else {
-      yield await serverBloc.getApi().getQueue();
-    }
   }
 
   List<TrackModel> handleSocketMessage(SocketMessage event) {

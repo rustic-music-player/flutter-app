@@ -6,27 +6,21 @@ part of 'search.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SearchResultModel _$SearchResultModelFromJson(Map<String, dynamic> json) {
-  return SearchResultModel(
-    tracks: (json['tracks'] as List)
-        ?.map((e) =>
-            e == null ? null : TrackModel.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-    albums: (json['albums'] as List)
-        ?.map((e) =>
-            e == null ? null : AlbumModel.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-    artists: (json['artists'] as List)
-        ?.map((e) =>
-            e == null ? null : ArtistModel.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-    playlists: (json['playlists'] as List)
-        ?.map((e) => e == null
-            ? null
-            : PlaylistModel.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-  );
-}
+SearchResultModel _$SearchResultModelFromJson(Map<String, dynamic> json) =>
+    SearchResultModel(
+      tracks: (json['tracks'] as List<dynamic>)
+          .map((e) => TrackModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      albums: (json['albums'] as List<dynamic>)
+          .map((e) => AlbumModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      artists: (json['artists'] as List<dynamic>)
+          .map((e) => ArtistModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      playlists: (json['playlists'] as List<dynamic>)
+          .map((e) => PlaylistModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
 
 Map<String, dynamic> _$SearchResultModelToJson(SearchResultModel instance) =>
     <String, dynamic>{

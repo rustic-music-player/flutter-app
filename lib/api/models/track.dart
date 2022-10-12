@@ -13,17 +13,17 @@ class TrackModel {
   final String title;
   final String cursor;
   final String provider;
-  final String coverart;
-  final AlbumModel album;
-  final ArtistModel artist;
-  final int duration;
-  final Rating rating;
-  final PositionModel position;
+  final String? coverart;
+  final AlbumModel? album;
+  final ArtistModel? artist;
+  final int? duration;
+  final Rating? rating;
+  final PositionModel? position;
 
   TrackModel(
-      {this.title,
-      this.cursor,
-      this.provider,
+      {required this.title,
+      required this.cursor,
+      required this.provider,
       this.coverart,
       this.duration,
       this.artist,
@@ -36,6 +36,6 @@ class TrackModel {
 
   bool get isFavorite {
     log('$rating');
-    return this.rating.type == Rating.Like;
+    return this.rating?.type == Rating.Like;
   }
 }

@@ -5,7 +5,7 @@ import 'package:rustic/ui/playlists/playlist-item.dart';
 class PlaylistList extends StatelessWidget {
   final List<PlaylistModel> playlists;
 
-  PlaylistList({this.playlists});
+  PlaylistList({required this.playlists});
 
   @override
   Widget build(BuildContext context) {

@@ -33,14 +33,30 @@ class ProviderSelectionChanged extends SearchEvent {
 class SearchBloc extends Bloc<SearchEvent, SearchResultModel> {
   final ServerBloc serverBloc;
   final ProviderBloc providerBloc;
-  StreamSubscription providerBlocSubscription;
-  List<String> providers = List();
-  String query;
+  late StreamSubscription providerBlocSubscription;
+  List<String> providers = [];
+  String? query;
 
-  SearchBloc({this.serverBloc, this.providerBloc}) {
-    providerBlocSubscription = providerBloc.listen((state) {
+  SearchBloc({required this.serverBloc, required this.providerBloc}): super(SearchResultModel(
+      artists: [], albums: [], playlists: [], tracks: [])) {
+    providerBlocSubscription = providerBloc.stream.listen((state) {
       this.add(ProviderSelectionChanged(state.active));
     });
+    on<SearchEvent>((event, emit) async {
+      if (event is SearchQuery) {
+        this.query = event.query;
+      }
+      if (event is ProviderSelectionChanged) {
+        this.providers = event.providers;
+      }
+      if (query == null) {
+        return;
+      }
+      var resultModel = await this.serverBloc.getApi()?.search(this.query!, this.providers);
+      if (resultModel != null) {
+        emit(resultModel);
+      }
+    }, transformer: debounce(Duration(milliseconds: 500)));
   }
 
   @override
@@ -48,28 +64,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchResultModel> {
     providerBlocSubscription.cancel();
     return super.close();
   }
+}
 
-  @override
-  SearchResultModel get initialState => SearchResultModel(
-      artists: List(), albums: List(), playlists: List(), tracks: List());
-
-  @override
-  Stream<Transition<SearchEvent, SearchResultModel>> transformEvents(
-      Stream<SearchEvent> events, next) {
-    return events.debounceTime(Duration(milliseconds: 500)).switchMap(next);
-  }
-
-  @override
-  Stream<SearchResultModel> mapEventToState(event) async* {
-    if (event is SearchQuery) {
-      this.query = event.query;
-    }
-    if (event is ProviderSelectionChanged) {
-      this.providers = event.providers;
-    }
-    if (query == null) {
-      return;
-    }
-    yield await this.serverBloc.getApi().search(this.query, this.providers);
-  }
+EventTransformer<Event> debounce<Event>(Duration duration) {
+  return (events, mapper) => events.debounceTime(duration).switchMap(mapper);
 }

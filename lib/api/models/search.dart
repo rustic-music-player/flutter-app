@@ -13,7 +13,7 @@ class SearchResultModel {
   final List<ArtistModel> artists;
   final List<PlaylistModel> playlists;
 
-  SearchResultModel({this.tracks, this.albums, this.artists, this.playlists});
+  SearchResultModel({required this.tracks, required this.albums, required this.artists, required this.playlists});
 
   factory SearchResultModel.fromJson(Map<String, dynamic> json) =>
       _$SearchResultModelFromJson(json);

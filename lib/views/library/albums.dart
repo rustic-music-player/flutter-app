@@ -36,14 +36,14 @@ class _AlbumsViewState extends State<AlbumsView> {
                   enablePullDown: true,
                   header: MaterialClassicHeader(),
                   onLoading: () => this
-                      .load(state.current.getApi())
+                      .load(state.current!.getApi()!)
                       .then((value) => _refreshController.loadComplete()),
                   onRefresh: () => this
-                      .load(state.current.getApi())
+                      .load(state.current!.getApi()!)
                       .then((value) => _refreshController.refreshCompleted()),
                   child: ListView(children: <Widget>[
                     AlbumList(
-                      albums: this.albums ?? [],
+                      albums: this.albums,
                     )
                   ]),
                 ),

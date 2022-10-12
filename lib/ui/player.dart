@@ -6,12 +6,14 @@ import 'package:rustic/state/media_bloc.dart';
 import 'package:rustic/state/server_bloc.dart';
 import 'package:rustic/views/player/player.dart';
 
+import 'coverart.dart';
+
 class RusticPlayerBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CurrentMediaBloc, Playing>(
       builder: (context, state) {
-        ServerBloc bloc = context.bloc();
+        ServerBloc bloc = context.read();
         if (state.track == null) {
           return Container();
         }
@@ -25,21 +27,19 @@ class RusticPlayerBar extends StatelessWidget {
                   padding: const EdgeInsets.all(0.0),
                   child: Hero(
                     tag: 'now-playing',
-                    child: Image(
-                        image:
-                            bloc.getApi().fetchCoverart(state.track.coverart)),
+                    child: Coverart(track: state.track)
                   ),
                 ),
                 CurrentlyPlayingText(state.track),
                 IconButton(
                   icon: Icon(state.isPlaying ? Icons.pause : Icons.play_arrow),
                   onPressed: () => state.isPlaying
-                      ? bloc.getApi().playerPause()
-                      : bloc.getApi().playerPlay(),
+                      ? bloc.getApi()?.playerPause()
+                      : bloc.getApi()?.playerPlay(),
                 ),
                 IconButton(
                   icon: Icon(Icons.skip_next),
-                  onPressed: () => bloc.getApi().playerNext(),
+                  onPressed: () => bloc.getApi()?.playerNext(),
                 )
               ],
             ),
@@ -51,12 +51,13 @@ class RusticPlayerBar extends StatelessWidget {
   }
 }
 
+
 class CurrentlyPlayingText extends StatelessWidget {
-  final TrackModel track;
+  final TrackModel? track;
 
   const CurrentlyPlayingText(
     this.track, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -76,7 +77,7 @@ class CurrentlyPlayingText extends StatelessWidget {
             ),
           ),
           Text(
-            track.artist?.name ?? '',
+            track?.artist?.name ?? '',
             style: TextStyle(fontSize: 12, color: Colors.white70),
             softWrap: false,
             overflow: TextOverflow.ellipsis,

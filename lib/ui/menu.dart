@@ -5,7 +5,7 @@ class MenuContainer extends StatelessWidget {
   final List<MenuItem> items;
   final Widget child;
 
-  MenuContainer({this.onTap, this.items, this.child});
+  MenuContainer({required this.onTap, required this.items, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class MenuContainer extends StatelessWidget {
         onSecondaryTapDown: (event) {
           var left = event.globalPosition.dx;
           var top = event.globalPosition.dy;
-          return showMenu(
+          showMenu(
               context: context,
               position: RelativeRect.fromLTRB(left, top, left + 8, top + 8),
               items: this.items.map((e) => e.desktop(context)).toList());
@@ -36,17 +36,17 @@ class MenuContainer extends StatelessWidget {
 }
 
 class MenuItem {
-  final VoidCallback onSelect;
+  final VoidCallback? onSelect;
   final String text;
   final IconData icon;
 
-  MenuItem(this.text, {this.onSelect, this.icon});
+  MenuItem(this.text, {this.onSelect, required this.icon});
 
   PopupMenuEntry desktop(BuildContext context) {
     return PopupMenuItem(
         child: GestureDetector(
             onTap: () {
-              this.onSelect();
+              this.onSelect!();
               Navigator.pop(context);
             },
             child: Text(this.text)));

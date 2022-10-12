@@ -13,8 +13,8 @@ class TracksView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ServerBloc, ServerState>(
-      builder: (context, state) => FutureBuilder(
-          future: state.current.getApi().fetchTracks(),
+      builder: (context, state) => FutureBuilder<List<TrackModel>>(
+          future: state.current?.getApi()?.fetchTracks(),
           builder: (context, snapshot) => Scaffold(
               drawer: RusticDrawer(),
               appBar: AppBar(
@@ -39,7 +39,7 @@ class TracksView extends StatelessWidget {
 class TrackList extends StatelessWidget {
   final List<TrackModel> tracks;
 
-  TrackList({this.tracks});
+  TrackList({required this.tracks});
 
   @override
   Widget build(BuildContext context) {

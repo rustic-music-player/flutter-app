@@ -9,7 +9,7 @@ class SocketMessage {
   final String type;
   final dynamic payload;
 
-  SocketMessage({this.playerCursor, this.type, this.payload});
+  SocketMessage({required this.playerCursor, required this.type, this.payload});
 
   factory SocketMessage.fromJson(Map<String, dynamic> json) =>
       _$SocketMessageFromJson(json);

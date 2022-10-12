@@ -1,3 +1,4 @@
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/http.dart';
@@ -27,9 +28,9 @@ class ServerSelectedMsg extends ServerMsg {
 
 class ServerState {
   final List<ServerConfiguration> servers;
-  final ServerConfiguration current;
+  final ServerConfiguration? current;
 
-  const ServerState({this.servers, this.current});
+  const ServerState({required this.servers, this.current});
 
   List<ServerConfiguration> available() {
     return servers.where((server) => server != current).toList();
@@ -43,15 +44,15 @@ abstract class ServerConfiguration {
 
   String label();
 
-  Api getApi();
+  Api? getApi();
 }
 
 class HttpServerConfiguration extends ServerConfiguration {
   final String ip;
   final int port;
-  HttpApi api;
+  late HttpApi api;
 
-  HttpServerConfiguration({this.ip, this.port, name}) : super(name) {
+  HttpServerConfiguration({required this.ip, required this.port, name}) : super(name) {
     this.api = HttpApi(baseUrl: '$ip:$port');
   }
 
@@ -75,7 +76,7 @@ class LocalServerConfiguration extends ServerConfiguration {
   }
 
   @override
-  Api getApi() {
+  Api? getApi() {
     return null;
   }
 }
@@ -83,50 +84,22 @@ class LocalServerConfiguration extends ServerConfiguration {
 class ServerBloc extends Bloc<ServerMsg, ServerState> {
   final SharedPreferences sharedPreferences;
 
-  ServerBloc(this.sharedPreferences);
-
-  @override
-  ServerState get initialState => this.load();
-
-  @override
-  Stream<ServerState> mapEventToState(ServerMsg event) async* {
-    if (event is ServerAddedMsg) {
+  ServerBloc(this.sharedPreferences) : super(load(sharedPreferences)) {
+    on<ServerAddedMsg>((event, emit) {
       var current = state.current;
       if (state.servers.length == 0) {
         current = event.server;
       }
-      yield ServerState(
-          current: current, servers: [...state.servers, event.server]);
-    }
-    if (event is ServerSelectedMsg) {
-      var current =
-          state.servers.firstWhere((server) => server.name == event.name);
-      yield ServerState(current: current, servers: state.servers);
-    }
-    await this.persist();
-  }
-
-  ServerState load() {
-    if (!sharedPreferences.containsKey('servers')) {
-      return ServerState(servers: [], current: null);
-    }
-    List<ServerConfiguration> servers = List();
-    var serverNames = sharedPreferences.getStringList('servers');
-    for (var name in serverNames) {
-      var type = sharedPreferences.getString('servers/$name/type');
-      if (type == 'local') {
-        servers.add(LocalServerConfiguration(name));
-      }
-      if (type == 'http') {
-        var ip = sharedPreferences.getString('servers/$name/ip');
-        var port = sharedPreferences.getInt('servers/$name/port');
-        servers.add(HttpServerConfiguration(ip: ip, port: port, name: name));
-      }
-    }
-    var currentName = sharedPreferences.getString('current');
-    var current = servers.firstWhere((server) => server.name == currentName);
-
-    return ServerState(current: current, servers: servers);
+      emit(ServerState(
+          current: current, servers: [...state.servers, event.server]));
+    });
+    on<ServerSelectedMsg>((event, emit) {
+      var current = state.servers.firstWhere((server) => server.name == event.name);
+      emit(ServerState(current: current, servers: state.servers));
+    });
+    on<ServerMsg>((event, emit) async {
+      await this.persist();
+    }, transformer: sequential());
   }
 
   Future<void> persist() async {
@@ -142,16 +115,39 @@ class ServerBloc extends Bloc<ServerMsg, ServerState> {
             'servers/${server.name}/port', server.port);
       }
     }
-    await sharedPreferences.setString('current', state.current.name);
+    await sharedPreferences.setString('current', state.current!.name);
     await sharedPreferences.setStringList(
         'servers', state.servers.map((e) => e.name).toList());
   }
 
   Stream<SocketMessage> events() {
-    return this.asyncExpand((event) => event.current.getApi()?.messages());
+    return this.stream.asyncExpand((event) => event.current?.getApi()?.messages());
   }
 
-  Api getApi() {
-    return this.state.current.getApi();
+  Api? getApi() {
+    return this.state.current?.getApi();
   }
+}
+
+ServerState load(SharedPreferences sharedPreferences) {
+  if (!sharedPreferences.containsKey('servers')) {
+    return ServerState(servers: [], current: null);
+  }
+  List<ServerConfiguration> servers = [];
+  var serverNames = sharedPreferences.getStringList('servers') ?? [];
+  for (var name in serverNames) {
+    var type = sharedPreferences.getString('servers/$name/type');
+    if (type == 'local') {
+      servers.add(LocalServerConfiguration(name));
+    }
+    if (type == 'http') {
+      var ip = sharedPreferences.getString('servers/$name/ip')!;
+      var port = sharedPreferences.getInt('servers/$name/port')!;
+      servers.add(HttpServerConfiguration(ip: ip, port: port, name: name));
+    }
+  }
+  var currentName = sharedPreferences.getString('current');
+  var current = servers.firstWhere((server) => server.name == currentName);
+
+  return ServerState(current: current, servers: servers);
 }

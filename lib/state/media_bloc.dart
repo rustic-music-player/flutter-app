@@ -25,16 +25,16 @@ class NextRepeatMode {}
 
 class Playing {
   bool isPlaying;
-  TrackModel track;
+  TrackModel? track;
   double volume;
   RepeatMode repeat;
-  Color primaryColor;
+  Color? primaryColor;
 
   Playing(
-      {this.isPlaying,
+      {required this.isPlaying,
       this.track,
-      this.volume,
-      this.repeat,
+      required this.volume,
+      required this.repeat,
       this.primaryColor});
 
   @override
@@ -55,11 +55,36 @@ class Playing {
 
 class CurrentMediaBloc extends Bloc<dynamic, Playing> {
   final ServerBloc serverBloc;
-  StreamSubscription socketSubscription;
+  late StreamSubscription socketSubscription;
 
-  CurrentMediaBloc({this.serverBloc}) {
+  CurrentMediaBloc({required this.serverBloc}): super(Playing(
+      isPlaying: false, track: null, volume: 1.0, repeat: RepeatMode.None)) {
     socketSubscription = serverBloc.events().listen((event) {
       this.add(event);
+    });
+
+    on<SocketMessage>((event, emit) async {
+      var next = await handleSocketMessage(event);
+      emit(next);
+    });
+    on<SetVolume>((event, emit) async {
+      emit(Playing.fromWith(state, volume: event.volume));
+      await serverBloc.getApi()!.setVolume(state.volume);
+    });
+    on<FetchPlayer>((event, emit) async {
+      var player = await serverBloc.getApi()!.getPlayer();
+      var color = await getColor(player.current);
+      emit(Playing(
+          isPlaying: player.playing,
+          track: player.current,
+          volume: player.volume,
+          repeat: player.repeat,
+          primaryColor: color));
+    });
+    on<NextRepeatMode>((event, emit) async {
+      var next = getNextRepeatMode();
+      await serverBloc.getApi()!.setRepeat(next);
+      emit(Playing.fromWith(state, repeat: next));
     });
   }
 
@@ -67,33 +92,6 @@ class CurrentMediaBloc extends Bloc<dynamic, Playing> {
   Future<void> close() {
     socketSubscription.cancel();
     return super.close();
-  }
-
-  @override
-  Playing get initialState => Playing(
-      isPlaying: false, track: null, volume: 1.0, repeat: RepeatMode.None);
-
-  @override
-  Stream<Playing> mapEventToState(dynamic event) async* {
-    if (event is SocketMessage) {
-      yield await handleSocketMessage(event);
-    } else if (event is SetVolume) {
-      yield Playing.fromWith(state, volume: event.volume);
-      await serverBloc.getApi().setVolume(state.volume);
-    } else if (event is FetchPlayer) {
-      var player = await serverBloc.getApi().getPlayer();
-      var color = await getColor(player.current);
-      yield Playing(
-          isPlaying: player.playing,
-          track: player.current,
-          volume: player.volume,
-          repeat: player.repeat,
-          primaryColor: color);
-    } else if (event is NextRepeatMode) {
-      var next = getNextRepeatMode();
-      await serverBloc.getApi().setRepeat(next);
-      yield Playing.fromWith(state, repeat: next);
-    }
   }
 
   Future<Playing> handleSocketMessage(event) async {
@@ -112,14 +110,17 @@ class CurrentMediaBloc extends Bloc<dynamic, Playing> {
     return state;
   }
 
-  Future<Color> getColor(TrackModel track) async {
-    Color color;
-    if (track != null) {
-      var palette = await PaletteGenerator.fromImageProvider(
-          serverBloc.getApi().fetchCoverart(track.coverart));
-      color = palette.vibrantColor?.color;
+  Future<Color?> getColor(TrackModel? track) async {
+    if (track?.coverart == null) {
+      return null;
     }
-    return color;
+    var image = serverBloc.getApi()!.fetchCoverart(track!.coverart!);
+    if (image == null) {
+      return null;
+    }
+    var palette = await PaletteGenerator.fromImageProvider(image);
+
+    return palette.vibrantColor?.color;
   }
 
   getNextRepeatMode() {

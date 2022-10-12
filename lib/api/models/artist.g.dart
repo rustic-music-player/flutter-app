@@ -6,13 +6,11 @@ part of 'artist.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ArtistModel _$ArtistModelFromJson(Map<String, dynamic> json) {
-  return ArtistModel(
-    cursor: json['cursor'] as String,
-    name: json['name'] as String,
-    image: json['image'] as String,
-  );
-}
+ArtistModel _$ArtistModelFromJson(Map<String, dynamic> json) => ArtistModel(
+      cursor: json['cursor'] as String,
+      name: json['name'] as String,
+      image: json['image'] as String?,
+    );
 
 Map<String, dynamic> _$ArtistModelToJson(ArtistModel instance) =>
     <String, dynamic>{

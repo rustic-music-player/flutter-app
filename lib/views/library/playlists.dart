@@ -13,9 +13,9 @@ class PlaylistsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ServerBloc, ServerState>(builder: (context, state) {
-      var api = state.current.getApi();
+      var api = state.current!.getApi();
       return FutureBuilder<List<PlaylistModel>>(
-          future: api.fetchPlaylists(),
+          future: api?.fetchPlaylists(),
           builder: (context, snapshot) {
             return Scaffold(
                 drawer: RusticDrawer(),

@@ -4,10 +4,9 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
-import 'package:http_logger/http_logger.dart';
-import 'package:http_middleware/http_middleware.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rustic/api/api.dart';
+import 'package:rustic/api/http_wrapper.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/artist.dart';
 import 'package:rustic/api/models/open_result.dart';
@@ -18,29 +17,19 @@ import 'package:rustic/api/models/search.dart';
 import 'package:rustic/api/models/socket_msg.dart';
 import 'package:rustic/api/models/track.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/io.dart';
-
-const HOST_PREFERENCES_KEY = 'HOST';
-
-Future<String> getBaseUrl() async {
-  var prefs = await SharedPreferences.getInstance();
-  return prefs.getString(HOST_PREFERENCES_KEY);
-}
 
 class HttpApi implements Api {
   final String baseUrl;
-  HttpWithMiddleware client;
-  IOWebSocketChannel channel;
-  Stream<SocketMessage> socketStream;
+  late HttpWrapper client;
+  late IOWebSocketChannel channel;
+  Stream<SocketMessage>? socketStream;
 
   String get apiUrl => 'http://$baseUrl/api';
 
-  HttpApi({this.baseUrl}) {
+  HttpApi({required this.baseUrl}) {
     channel = connectSocket();
-    client = HttpWithMiddleware.build(middlewares: [
-      HttpLogger(logLevel: LogLevel.BASIC),
-    ]);
+    client = HttpWrapper();
   }
 
   IOWebSocketChannel connectSocket() =>
@@ -117,7 +106,7 @@ class HttpApi implements Api {
     providers.asMap().forEach((i, p) => providerQuery.add('&providers[$i]=$p'));
     var providerQueryString = providerQuery.join();
     var result =
-        await fetchGeneric('search', query: 'query=$query$providerQueryString');
+    await fetchGeneric('search', query: 'query=$query$providerQueryString');
 
     return SearchResultModel.fromJson(result);
   }
@@ -183,7 +172,7 @@ class HttpApi implements Api {
   }
 
   @override
-  NetworkImage fetchCoverart(String url) {
+  NetworkImage? fetchCoverart(String? url) {
     if (url == null) {
       return null;
     }
@@ -202,7 +191,7 @@ class HttpApi implements Api {
   @override
   Stream<SocketMessage> messages() {
     if (socketStream == null) {
-      socketStream = channel.stream.onErrorResume((e) {
+      socketStream = channel.stream.onErrorResume((e, _) {
         this.channel = connectSocket();
         return this.channel.stream;
       }).map((event) {
@@ -211,7 +200,7 @@ class HttpApi implements Api {
         return msg;
       }).asBroadcastStream();
     }
-    return socketStream;
+    return socketStream!;
   }
 
   @override

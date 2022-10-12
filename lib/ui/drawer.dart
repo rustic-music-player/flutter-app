@@ -26,7 +26,7 @@ class _RusticDrawerState extends State<RusticDrawer> {
           children: <Widget>[
             UserAccountsDrawerHeader(
               currentAccountPicture: CircleAvatar(
-                  child: Text(state.current.name[0].toUpperCase(),
+                  child: Text(state.current!.name[0].toUpperCase(),
                       style: TextStyle(fontSize: 40))),
               otherAccountsPictures: state
                   .available()
@@ -34,12 +34,12 @@ class _RusticDrawerState extends State<RusticDrawer> {
                         child:
                             CircleAvatar(child: Text(s.name[0].toUpperCase())),
                         onTap: () => context
-                            .bloc<ServerBloc>()
+                            .read<ServerBloc>()
                             .add(ServerSelectedMsg(s.name)),
                       ))
                   .toList(),
-              accountName: Text(state.current.name),
-              accountEmail: Text(state.current.label()),
+              accountName: Text(state.current!.name),
+              accountEmail: Text(state.current!.label()),
               onDetailsPressed: () => setState(() {
                 this.showList = !this.showList;
               }),
@@ -61,7 +61,7 @@ class ServerList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ServerBloc bloc = context.bloc();
+    ServerBloc bloc = context.read();
     if (!showList) {
       return Container();
     }
@@ -89,14 +89,14 @@ class RusticNavigationItem extends StatelessWidget {
   final String title;
   final String routeName;
   final bool dense;
-  final IconData icon;
+  final IconData? icon;
 
   const RusticNavigationItem(this.title, this.routeName,
       {this.dense = false, this.icon});
 
   @override
   Widget build(BuildContext context) {
-    bool current = ModalRoute.of(context).settings.name == this.routeName;
+    bool current = ModalRoute.of(context)!.settings.name == this.routeName;
     return Container(
       child: ListTile(
         title: Text(this.title),

@@ -28,7 +28,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  BlocSupervisor.delegate = BlocLoggerDelegate();
+  Bloc.observer = BlocLoggerObserver();
   var notificationsService = NotificationsService();
   await notificationsService.setup();
   var prefs = await SharedPreferences.getInstance();
@@ -40,7 +40,7 @@ class RusticApp extends StatelessWidget {
   final NotificationsService notificationsService;
   final SharedPreferences sharedPreferences;
 
-  RusticApp({this.notificationsService, this.sharedPreferences});
+  RusticApp({required this.notificationsService, required this.sharedPreferences});
 
   @override
   Widget build(BuildContext context) {
@@ -50,27 +50,27 @@ class RusticApp extends StatelessWidget {
             create: (context) => ServerBloc(sharedPreferences),
           ),
           BlocProvider(create: (BuildContext context) {
-            var bloc = QueueBloc(serverBloc: context.bloc());
+            var bloc = QueueBloc(serverBloc: context.read());
             bloc.add(FetchQueue());
             return bloc;
           }),
           BlocProvider(create: (BuildContext context) {
-            var bloc = CurrentMediaBloc(serverBloc: context.bloc());
+            var bloc = CurrentMediaBloc(serverBloc: context.read());
             bloc.add(FetchPlayer());
 
             return bloc;
           }),
           BlocProvider(create: (BuildContext context) {
-            var bloc = ProviderBloc(serverBloc: context.bloc());
+            var bloc = ProviderBloc(serverBloc: context.read());
             bloc.add(FetchProviders());
             return bloc;
           }),
           BlocProvider(
             create: (BuildContext context) => SearchBloc(
-                serverBloc: context.bloc(), providerBloc: context.bloc()),
+                serverBloc: context.read(), providerBloc: context.read()),
           ),
           BlocProvider(
-            create: (context) => ShareUrlBloc(context.bloc()),
+            create: (context) => ShareUrlBloc(context.read()),
           ),
         ],
         child: BlocBuilder<ServerBloc, ServerState>(
@@ -86,8 +86,8 @@ class RusticApp extends StatelessWidget {
 
 class AppShell extends StatefulWidget {
   const AppShell({
-    Key key,
-    @required this.notificationsService,
+    Key? key,
+    required this.notificationsService,
   }) : super(key: key);
 
   final NotificationsService notificationsService;
@@ -103,8 +103,8 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     return BlocListener<CurrentMediaBloc, Playing>(
       listener: (context, state) {
-        ServerBloc bloc = context.bloc();
-        this.widget.notificationsService.showNotification(bloc.getApi(), state);
+        ServerBloc bloc = context.read();
+        this.widget.notificationsService.showNotification(bloc.getApi()!, state);
       },
       child: MaterialApp(
         title: 'Rustic',
@@ -116,18 +116,21 @@ class _AppShellState extends State<AppShell> {
         initialRoute: AlbumsView.routeName,
         navigatorKey: _navigatorKey,
         builder: (context, widget) =>
-            BlocListener<ShareUrlBloc, OpenResultModel>(
+            BlocListener<ShareUrlBloc, OpenResultModel?>(
                 listener: (context, state) {
+                  if (state == null) {
+                    return;
+                  }
                   if (state.type == 'album') {
-                    AlbumModel album = AlbumModel(cursor: state.cursor);
-                    _navigatorKey.currentState.pushNamed(AlbumView.routeName,
+                    AlbumModel album = AlbumModel(cursor: state.cursor, title: "", tracks: []); // TODO: These defaults shouldn't be required
+                    _navigatorKey.currentState?.pushNamed(AlbumView.routeName,
                         arguments: AlbumViewArguments(album));
                   }
                   if (state.type == 'playlist') {
                     // TODO: load full playlist
                     PlaylistModel playlist =
-                        PlaylistModel(cursor: state.cursor);
-                    _navigatorKey.currentState.pushNamed(PlaylistView.routeName,
+                        PlaylistModel(cursor: state.cursor, title: "", tracks: []); // TODO: These defaults shouldn't be required
+                    _navigatorKey.currentState?.pushNamed(PlaylistView.routeName,
                         arguments: PlaylistViewArguments(playlist));
                   }
                   // TODO: add support for tracks and artists

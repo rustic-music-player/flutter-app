@@ -7,7 +7,7 @@ class OpenResultModel {
   final String cursor;
   final String type;
 
-  OpenResultModel({this.cursor, this.type});
+  OpenResultModel({required this.cursor, required this.type});
 
   factory OpenResultModel.fromJson(Map<String, dynamic> json) =>
       _$OpenResultModelFromJson(json);

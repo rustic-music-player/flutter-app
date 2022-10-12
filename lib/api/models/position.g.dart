@@ -6,12 +6,11 @@ part of 'position.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-PositionModel _$PositionModelFromJson(Map<String, dynamic> json) {
-  return PositionModel(
-    track: json['track'] as int,
-    disc: json['disc'] as int,
-  );
-}
+PositionModel _$PositionModelFromJson(Map<String, dynamic> json) =>
+    PositionModel(
+      track: json['track'] as int?,
+      disc: json['disc'] as int?,
+    );
 
 Map<String, dynamic> _$PositionModelToJson(PositionModel instance) =>
     <String, dynamic>{

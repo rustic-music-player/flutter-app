@@ -22,7 +22,7 @@ class SearchView extends StatefulWidget {
 }
 
 class _SearchViewState extends State<SearchView> {
-  String query;
+  String? query;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class _SearchViewState extends State<SearchView> {
                   textInputAction: TextInputAction.search,
                   onChanged: (String query) {
                     this.query = query;
-                    context.bloc<SearchBloc>().add(SearchQuery(query));
+                    context.read<SearchBloc>().add(SearchQuery(query));
                   }),
             ),
             body: SearchResultView(state, query)));
@@ -44,7 +44,7 @@ class _SearchViewState extends State<SearchView> {
 
 class SearchResultView extends StatelessWidget {
   final SearchResultModel results;
-  final String query;
+  final String? query;
 
   SearchResultView(this.results, this.query);
 
@@ -64,7 +64,7 @@ class SearchResultView extends StatelessWidget {
       widgets.add(SearchHeader(
           "Albums",
           () => Navigator.pushNamed(context, SearchAlbumView.routeName,
-              arguments: SearchAlbumArguments(results.albums, query))));
+              arguments: SearchAlbumArguments(results.albums, query!))));
       widgets.add(AlbumList(
         albums:
             results.albums.sublist(0, min(results.albums.length, MAX_ALBUMS)),
@@ -77,7 +77,7 @@ class SearchResultView extends StatelessWidget {
       widgets.add(SearchHeader(
           "Playlists",
           () => Navigator.pushNamed(context, SearchPlaylistView.routeName,
-              arguments: SearchPlaylistArguments(results.playlists, query))));
+              arguments: SearchPlaylistArguments(results.playlists, query!))));
       widgets.add(PlaylistList(
         playlists: results.playlists
             .sublist(0, min(results.playlists.length, MAX_PLAYLISTS)),
@@ -88,14 +88,13 @@ class SearchResultView extends StatelessWidget {
 
 class SearchHeader extends StatelessWidget {
   final String title;
-  final Function onPress;
+  final Function() onPress;
 
   SearchHeader(this.title, this.onPress);
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+    return TextButton(
       onPressed: onPress,
       child: Row(
         children: <Widget>[

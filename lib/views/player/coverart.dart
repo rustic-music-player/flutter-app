@@ -4,13 +4,13 @@ import 'package:rustic/state/media_bloc.dart';
 import 'package:rustic/state/server_bloc.dart';
 
 class PlayerCoverArt extends StatelessWidget {
-  PlayerCoverArt({Key key}) : super(key: key);
+  PlayerCoverArt({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final ServerBloc bloc = context.bloc();
+    final ServerBloc bloc = context.read();
     return BlocBuilder<CurrentMediaBloc, Playing>(
-      condition: (prev, next) => prev.track?.coverart != next.track?.coverart,
+      buildWhen: (prev, next) => prev.track?.coverart != next.track?.coverart,
       builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.all(32),
@@ -30,8 +30,8 @@ class PlayerCoverArt extends StatelessWidget {
                   child: Hero(
                     tag: 'now-playing',
                     child: Image(
-                      key: Key(state.track.coverart),
-                      image: bloc.getApi().fetchCoverart(state.track.coverart),
+                      key: Key(state.track!.coverart!),
+                      image: bloc.getApi()!.fetchCoverart(state.track!.coverart!)!, // TODO: this can't be guaranteed
                       fit: BoxFit.contain,
                     ),
                   )),

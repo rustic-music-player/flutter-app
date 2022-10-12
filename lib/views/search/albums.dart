@@ -17,7 +17,7 @@ class SearchAlbumView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SearchAlbumArguments args = ModalRoute.of(context).settings.arguments;
+    SearchAlbumArguments args = ModalRoute.of(context)!.settings.arguments! as SearchAlbumArguments;
     return BlocBuilder<SearchBloc, SearchResultModel>(
         builder: (context, state) => Scaffold(
             appBar: AppBar(

@@ -6,6 +6,7 @@ import 'package:rustic/api/api.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/track.dart';
 import 'package:rustic/state/server_bloc.dart';
+import 'package:rustic/ui/coverart.dart';
 import 'package:rustic/ui/player.dart';
 
 class AlbumViewArguments {
@@ -19,9 +20,9 @@ class AlbumView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AlbumViewArguments args = ModalRoute.of(context).settings.arguments;
-    final ServerBloc bloc = context.bloc();
-    final Api api = bloc.getApi();
+    final AlbumViewArguments args = ModalRoute.of(context)!.settings.arguments! as AlbumViewArguments;
+    final ServerBloc bloc = context.read();
+    final Api api = bloc.getApi()!;
 
     return Scaffold(
         appBar: AppBar(
@@ -39,20 +40,20 @@ class AlbumView extends StatelessWidget {
               if (snapshot.hasData) {
                 return Expanded(
                     child: ListView(children: [
-                  AlbumHeader(api, snapshot.data),
-                  ...snapshot.data.tracks
+                  AlbumHeader(api, snapshot.data!),
+                  ...snapshot.data!.tracks
                       .map<Widget>((t) => ListTile(
                             title: Text(t.title),
                             subtitle: mapDuration(t),
                             leading: CircleAvatar(
-                                child: Text(t.position?.track.toString())),
+                                child: Text(t.position?.track?.toString() ?? "")),
                             onTap: () => api.queueTrack(t.cursor),
                           ))
                       .toList(),
                   Padding(
                     padding: const EdgeInsets.all(8.0)
                         .add(EdgeInsets.only(bottom: 8)),
-                    child: Text('${snapshot.data.tracks.length} Tracks',
+                    child: Text('${snapshot.data!.tracks.length} Tracks',
                         style: TextStyle(color: Colors.white54),
                         textAlign: TextAlign.center),
                   )
@@ -69,11 +70,11 @@ class AlbumView extends StatelessWidget {
         ]));
   }
 
-  Text mapDuration(TrackModel track) {
+  Text? mapDuration(TrackModel track) {
     if (track.duration == null) {
       return null;
     }
-    var duration = Duration(seconds: track.duration);
+    var duration = Duration(seconds: track.duration!);
     var seconds =
         duration.inSeconds - (duration.inMinutes * Duration.secondsPerMinute);
     return Text('${duration.inMinutes}:${seconds.toString().padLeft(2, '0')}');
@@ -84,7 +85,7 @@ class AlbumHeader extends StatelessWidget {
   final Api api;
   final AlbumModel album;
 
-  const AlbumHeader(this.api, this.album, {Key key}) : super(key: key);
+  const AlbumHeader(this.api, this.album, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -100,8 +101,7 @@ class AlbumHeader extends StatelessWidget {
                   flex: 2,
                   child: Container(
                       padding: const EdgeInsets.only(right: 16.0),
-                      child: FlatButton(
-                        padding: const EdgeInsets.all(0),
+                      child: TextButton(
                         onPressed: () => api.queueAlbum(album.cursor),
                         child: Stack(
                             alignment: Alignment.center,
@@ -112,9 +112,7 @@ class AlbumHeader extends StatelessWidget {
                                           const Radius.circular(4)),
                                       child: Hero(
                                           tag: album.cursor,
-                                          child: Image(
-                                              image: api.fetchCoverart(
-                                                  album.coverart))),
+                                          child: Coverart(album: album)),
                                     )
                                   : Container(),
                               Icon(Icons.play_circle_filled,
@@ -151,7 +149,7 @@ class LibraryButton extends StatefulWidget {
   const LibraryButton(
     this.api,
     this.album, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -167,13 +165,12 @@ class _LibraryButtonState extends State<LibraryButton> {
   @override
   Widget build(BuildContext context) {
     if (inLibrary) {
-      return OutlineButton(
+      return OutlinedButton(
           onPressed: () => widget.api
               .removeAlbumFromLibrary(widget.album)
               .then((value) => this.setState(() {
                     this.inLibrary = false;
                   })),
-          padding: const EdgeInsets.all(4),
           child: Row(
             children: <Widget>[
               Padding(
@@ -184,14 +181,13 @@ class _LibraryButtonState extends State<LibraryButton> {
             ],
           ));
     }
-    return OutlineButton(
+    return OutlinedButton(
       onPressed: () => widget.api
           .addAlbumToLibrary(widget.album)
           .then((value) => this.setState(() {
                 this.inLibrary = true;
               })),
-      padding: const EdgeInsets.all(4),
-      color: Colors.deepOrange,
+      // color: Colors.deepOrange,
       child: Row(
         children: <Widget>[
           Padding(

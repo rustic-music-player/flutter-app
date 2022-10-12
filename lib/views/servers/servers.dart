@@ -20,7 +20,7 @@ class ServersView extends StatelessWidget {
               children: <Widget>[AddServer()],
               contentPadding: EdgeInsets.all(16),
             );
-            showDialog(context: context, child: dialog);
+            showDialog(context: context, builder: (context) => dialog);
           },
           child: Icon(Icons.add),
         ),
@@ -37,7 +37,7 @@ class ServersView extends StatelessWidget {
 }
 
 class AddServer extends StatefulWidget {
-  final void Function(ServerConfiguration) onDone;
+  final void Function(ServerConfiguration)? onDone;
 
   AddServer({this.onDone});
 
@@ -52,7 +52,7 @@ class _AddServerState extends State<AddServer> {
 
   @override
   Widget build(BuildContext context) {
-    var bloc = context.bloc<ServerBloc>();
+    var bloc = context.read<ServerBloc>();
     return ListView(
       children: <Widget>[
         TextFormField(
@@ -65,17 +65,17 @@ class _AddServerState extends State<AddServer> {
             controller: portController,
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
-              WhitelistingTextInputFormatter.digitsOnly
+              FilteringTextInputFormatter.digitsOnly
             ],
             decoration: const InputDecoration(labelText: 'Port')),
         Padding(
             padding: const EdgeInsets.only(top: 16),
             child: Row(
               children: <Widget>[
-                FlatButton(
+                TextButton(
                     child: Text('Cancel'),
                     onPressed: () => Navigator.pop(context)),
-                RaisedButton(
+                ElevatedButton(
                     child: Text('Add'),
                     onPressed: () {
                       var config = HttpServerConfiguration(
@@ -84,7 +84,7 @@ class _AddServerState extends State<AddServer> {
                           port: int.parse(portController.value.text));
                       bloc.add(ServerAddedMsg(config));
                       if (widget.onDone != null) {
-                        widget.onDone(config);
+                        widget.onDone!(config);
                       }
                       Navigator.pop(context);
                     })

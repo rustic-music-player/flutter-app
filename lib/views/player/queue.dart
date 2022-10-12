@@ -11,7 +11,7 @@ class QueueView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ServerBloc serverBloc = context.bloc();
+    final ServerBloc serverBloc = context.read();
     return BlocBuilder<QueueBloc, List<TrackModel>>(
         builder: (context, state) => Scaffold(
               appBar: AppBar(
@@ -30,7 +30,7 @@ class QueueView extends StatelessWidget {
                         i,
                         TrackListItem(t,
                             onSelect: () =>
-                                serverBloc.getApi().selectQueueItem(i))))
+                                serverBloc.getApi()?.selectQueueItem(i))))
                     .values
                     .toList(),
               ),

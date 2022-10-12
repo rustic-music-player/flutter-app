@@ -17,9 +17,8 @@ class PlaylistView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PlaylistViewArguments args =
-        ModalRoute.of(context).settings.arguments;
-    final ServerBloc bloc = context.bloc();
+    final PlaylistViewArguments args = ModalRoute.of(context)!.settings.arguments! as PlaylistViewArguments;
+    final ServerBloc bloc = context.read();
 
     return Scaffold(
       appBar: AppBar(
@@ -29,7 +28,7 @@ class PlaylistView extends StatelessWidget {
               onPressed: () => Navigator.pop(context))),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.playlist_play),
-        onPressed: () => bloc.getApi().queuePlaylist(args.playlist.cursor),
+        onPressed: () => bloc.getApi()?.queuePlaylist(args.playlist.cursor),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       body: Column(
