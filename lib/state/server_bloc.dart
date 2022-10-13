@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/api/api.dart';
 import 'package:rustic/api/http.dart';
 import 'package:rustic/api/models/socket_msg.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const LOCAL_SERVER = LocalServerConfiguration('Local');
@@ -121,7 +122,9 @@ class ServerBloc extends Bloc<ServerMsg, ServerState> {
   }
 
   Stream<SocketMessage> events() {
-    return this.stream.asyncExpand((event) => event.current?.getApi()?.messages());
+    return this.stream.startWith(state).switchMap<SocketMessage>((state) {
+      return state.current?.getApi()?.messages() ?? Stream.empty();
+    });
   }
 
   Api? getApi() {

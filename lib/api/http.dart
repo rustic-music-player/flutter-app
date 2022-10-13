@@ -190,7 +190,9 @@ class HttpApi implements Api {
 
   @override
   Stream<SocketMessage> messages() {
+    log("listening to socket messages");
     if (socketStream == null) {
+      log("opening socket stream...");
       socketStream = channel.stream.onErrorResume((e, _) {
         this.channel = connectSocket();
         return this.channel.stream;
