@@ -17,34 +17,38 @@ class NotificationsService {
   }
 
   Future<void> setup() async {
-    if (NotificationsService.isSupported) {
+    if (!NotificationsService.isSupported) {
       return;
     }
-    var androidSettings =
-        AndroidInitializationSettings('@mipmap/launcher_icon');
-    var settings = InitializationSettings(android: androidSettings);
+    var androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
+    var linuxSettings = LinuxInitializationSettings(defaultActionName: "Open Player");
+    var settings = InitializationSettings(android: androidSettings, linux: linuxSettings);
     await notificationsPlugin?.initialize(settings);
   }
 
   void showNotification(Api api, Playing playing) async {
-    if (NotificationsService.isSupported) {
+    if (!NotificationsService.isSupported) {
       return;
     }
     if (playing.track == null) {
       notificationsPlugin?.cancel(0);
     } else {
       var imagePath = await api.getLocalCoverart(playing.track!);
-      var androidSpecifics = AndroidNotificationDetails(
-          'playing', 'Playing',
+      var androidSpecifics = AndroidNotificationDetails('playing', 'Playing',
           channelDescription: 'Currently Playing',
+          ongoing: true,
           styleInformation: MediaStyleInformation(),
           largeIcon: FilePathAndroidBitmap(imagePath),
-          visibility: NotificationVisibility.public);
-      var platformSpecifics = NotificationDetails(android: androidSpecifics);
+          visibility: NotificationVisibility.public,
+          audioAttributesUsage: AudioAttributesUsage.media);
+      var linuxSpecifics =
+          LinuxNotificationDetails(suppressSound: true, urgency: LinuxNotificationUrgency.low);
+      var platformSpecifics = NotificationDetails(android: androidSpecifics, linux: linuxSpecifics);
       notificationsPlugin?.show(
           0, playing.track?.title, playing.track?.artist?.name, platformSpecifics);
     }
   }
 
-  static final isSupported = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  static final isSupported =
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isLinux || Platform.isMacOS);
 }
