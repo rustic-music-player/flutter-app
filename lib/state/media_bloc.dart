@@ -16,9 +16,11 @@ const volumeChangedMsg = 'VOLUME_CHANGED';
 class FetchPlayer {}
 
 class SetVolume {
-  final double volume;
+  late final double volume;
 
-  SetVolume(this.volume);
+  SetVolume(double volume) {
+    this.volume = volume.clamp(0, 1);
+  }
 }
 
 class NextRepeatMode {}
