@@ -40,7 +40,7 @@ class HttpApi implements Api {
     final res = await client.get(uri);
 
     if (res.statusCode == 200) {
-      return jsonDecode(res.body);
+      return jsonDecode(utf8.decode(res.bodyBytes));
     } else {
       throw Exception('Failed to load $url');
     }
