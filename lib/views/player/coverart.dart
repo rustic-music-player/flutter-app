@@ -19,26 +19,33 @@ class PlayerCoverArt extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(boxShadow: [
                 BoxShadow(
-                    color: Colors.black26,
-                    spreadRadius: 5,
-                    blurRadius: 5,
-                    offset: Offset(0, 2))
+                    color: Colors.black26, spreadRadius: 5, blurRadius: 5, offset: Offset(0, 2))
               ]),
               child: ClipRRect(
-                  borderRadius:
-                      const BorderRadius.all(const Radius.circular(4)),
-                  child: Hero(
-                    tag: 'now-playing',
-                    child: Image(
-                      key: Key(state.track!.coverart!),
-                      image: bloc.getApi()!.fetchCoverart(state.track!.coverart!)!, // TODO: this can't be guaranteed
-                      fit: BoxFit.contain,
-                    ),
-                  )),
+                  borderRadius: const BorderRadius.all(const Radius.circular(4)),
+                  child: _buildCoverart(state, bloc)),
             ),
           ),
         );
       },
     );
+  }
+
+  Widget? _buildCoverart(Playing state, ServerBloc bloc) {
+    if (state.track?.coverart == null) {
+      return null;
+    }
+    NetworkImage? coverart = bloc.getApi()?.fetchCoverart(state.track!.coverart!);
+    if (coverart == null) {
+      return null;
+    }
+
+    return Hero(
+        tag: 'now-playing',
+        child: Image(
+          key: Key(state.track!.coverart!),
+          image: coverart,
+          fit: BoxFit.contain,
+        ));
   }
 }
