@@ -16,8 +16,8 @@ class PlayerView extends StatelessWidget {
     if (mobile) {
       body = Column(
         children: <Widget>[
-          PlayerCoverArt(),
-          PlayerMetadata(),
+          Expanded(child: PlayerCoverArt()),
+          NowPlaying(),
           PlayerControls(),
           PlayerVolumeControl(),
         ],
@@ -25,16 +25,20 @@ class PlayerView extends StatelessWidget {
     } else {
       body = Row(
         children: [
-          PlayerCoverArt(),
-          Expanded(
-            child: Column(
-              children: [
-                PlayerMetadata(),
-                PlayerControls(),
-                PlayerVolumeControl()
-              ],
-            ),
-          )
+          Flexible(
+            child: Column(children: [
+              Expanded(child: PlayerCoverArt()),
+              NowPlaying(),
+              PlayerControls(),
+              PlayerVolumeControl()
+            ]),
+          ),
+          Flexible(flex: 2, child: Column(
+            children: [
+              Text("Queue"),
+              Expanded(child: Queue()),
+            ],
+          ))
         ],
       );
     }
@@ -44,13 +48,31 @@ class PlayerView extends StatelessWidget {
           leading: ClosePlayerButton(),
           title: const Text("Now Playing"),
           centerTitle: true,
-          actions: <Widget>[PlayerFavoriteButton(), PlayerQueueButton(false)],
+          actions: mobile ? [PlayerQueueButton(false)] : [],
           elevation: 0,
         ),
         backgroundColor: const Color.fromARGB(255, 32, 32, 32),
         body: body);
   }
 }
+
+class NowPlaying extends StatelessWidget {
+  const NowPlaying({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        constraints: BoxConstraints(maxWidth: 500),
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          PlayerFavoriteButton(),
+          PlayerMetadata(),
+          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
+        ]),
+      );
+  }
+}
+
 
 class ClosePlayerButton extends StatelessWidget {
   const ClosePlayerButton({

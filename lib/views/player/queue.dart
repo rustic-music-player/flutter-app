@@ -11,29 +11,39 @@ class QueueView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 32, 32, 32),
+        leading: ClosePlayerButton(),
+        title: const Text("Queue"),
+        centerTitle: true,
+        actions: [PlayerQueueButton(true)],
+        elevation: 0,
+      ),
+      backgroundColor: const Color.fromARGB(255, 32, 32, 32),
+      body: Queue(),
+    );
+  }
+}
+
+class Queue extends StatelessWidget {
+  const Queue({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     final ServerBloc serverBloc = context.read();
-    return BlocBuilder<QueueBloc, List<TrackModel>>(
-        builder: (context, state) => Scaffold(
-              appBar: AppBar(
-                backgroundColor: const Color.fromARGB(255, 32, 32, 32),
-                leading: ClosePlayerButton(),
-                title: const Text("Queue"),
-                centerTitle: true,
-                actions: <Widget>[PlayerQueueButton(true)],
-                elevation: 0,
-              ),
-              backgroundColor: const Color.fromARGB(255, 32, 32, 32),
-              body: ListView(
-                children: state
-                    .asMap()
-                    .map((i, t) => MapEntry(
-                        i,
-                        TrackListItem(t,
-                            onSelect: () =>
-                                serverBloc.getApi()?.selectQueueItem(i))))
-                    .values
-                    .toList(),
-              ),
-            ));
+
+    return BlocBuilder<QueueBloc, List<TrackModel>>(builder: (context, tracks) {
+      return ListView(
+        children: tracks
+            .asMap()
+            .map((i, t) => MapEntry(
+                i, TrackListItem(t, onSelect: () => serverBloc.getApi()?.selectQueueItem(i))))
+            .values
+            .toList(),
+      );
+    });
   }
 }

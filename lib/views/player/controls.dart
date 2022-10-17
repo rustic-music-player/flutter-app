@@ -34,7 +34,7 @@ class PlayerControls extends StatelessWidget {
             iconSize: 32,
             onPressed: () => bloc.getApi()?.playerNext(),
           ),
-          RepeatButton()
+          RepeatButton(),
         ],
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -96,6 +96,7 @@ class PlayPauseButton extends StatelessWidget {
               decoration: ShapeDecoration(
                   shape: CircleBorder(), color: state.primaryColor),
               child: IconButton(
+                autofocus: true,
                 icon: Icon(
                   state.isPlaying ? Icons.pause : Icons.play_arrow,
                   color: Colors.white,
@@ -130,7 +131,7 @@ class PlayerVolumeControl extends StatelessWidget {
           Expanded(
               child: Slider(
             value: state.volume,
-            divisions: 100,
+            divisions: 1000,
             activeColor: state.primaryColor,
             onChanged: (volume) => bloc.add(SetVolume(volume)),
           )),
