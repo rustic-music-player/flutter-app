@@ -36,7 +36,6 @@ class NotificationsService {
       var imagePath = await api.getLocalCoverart(playing.track!);
       var androidSpecifics = AndroidNotificationDetails('playing', 'Playing',
           channelDescription: 'Currently Playing',
-          ongoing: true,
           styleInformation: MediaStyleInformation(),
           largeIcon: FilePathAndroidBitmap(imagePath),
           visibility: NotificationVisibility.public,
