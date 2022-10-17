@@ -102,6 +102,7 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<CurrentMediaBloc, Playing>(
+      listenWhen: (previous, next) => previous.track != next.track,
       listener: (context, state) {
         ServerBloc bloc = context.read();
         this.widget.notificationsService.showNotification(bloc.getApi()!, state);
