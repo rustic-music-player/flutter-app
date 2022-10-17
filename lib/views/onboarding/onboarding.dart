@@ -13,7 +13,7 @@ class Onboarding extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity),
       home: Scaffold(
           appBar: AppBar(title: Text('Add Server')),
-          body: Container(padding: EdgeInsets.all(16), child: AddServer())),
+          body: Container(padding: EdgeInsets.all(16), child: ServerSettings())),
     );
   }
 }

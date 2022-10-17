@@ -21,6 +21,13 @@ class ServerAddedMsg extends ServerMsg {
   const ServerAddedMsg(this.server);
 }
 
+class ServerEditedMsg extends ServerMsg {
+  final ServerConfiguration previous;
+  final ServerConfiguration next;
+
+  const ServerEditedMsg(this.previous, this.next);
+}
+
 class ServerSelectedMsg extends ServerMsg {
   final String name;
 
@@ -93,6 +100,17 @@ class ServerBloc extends Bloc<ServerMsg, ServerState> {
       }
       emit(ServerState(
           current: current, servers: [...state.servers, event.server]));
+    });
+    on<ServerEditedMsg>((event, emit) {
+      var current = state.current;
+      var index = state.servers.indexOf(event.previous);
+      if (current == event.previous) {
+        current = event.next;
+      }
+      var servers = [...state.servers];
+      servers[index] = event.next;
+      emit(ServerState(
+          current: current, servers: servers));
     });
     on<ServerSelectedMsg>((event, emit) {
       var current = state.servers.firstWhere((server) => server.name == event.name);

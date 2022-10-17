@@ -14,47 +14,83 @@ class ServersView extends StatelessWidget {
         drawer: RusticDrawer(),
         appBar: AppBar(title: Text('Servers')),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            var dialog = SimpleDialog(
-              title: Text('Add Server'),
-              children: <Widget>[AddServer()],
-              contentPadding: EdgeInsets.all(16),
-            );
-            showDialog(context: context, builder: (context) => dialog);
-          },
+          onPressed: () => _addServer(context),
           child: Icon(Icons.add),
         ),
         body: BlocBuilder<ServerBloc, ServerState>(
           builder: (context, state) => ListView(
               children: state.servers
-                  .map((c) => ListTile(
-                        title: Text(c.name),
-                        subtitle: Text(c.label()),
+                  .map((server) => ListTile(
+                        title: Text(server.name),
+                        subtitle: Text(server.label()),
+                        onTap: () => _editServer(context, server),
                       ))
                   .toList()),
         ));
   }
+
+  void _addServer(BuildContext context) async {
+    var dialog = SimpleDialog(
+      title: Text('Add Server'),
+      children: [ServerSettings()],
+      contentPadding: EdgeInsets.all(16),
+    );
+    ServerConfiguration? result = await showDialog(context: context, builder: (context) => dialog);
+    if (result == null) {
+      return;
+    }
+    ServerBloc bloc = context.read();
+    bloc.add(ServerAddedMsg(result));
+  }
+
+  void _editServer(BuildContext context, ServerConfiguration config) async {
+    var dialog = SimpleDialog(
+      title: Text('Edit Server'),
+      children: [ServerSettings(config: config)],
+      contentPadding: EdgeInsets.all(16),
+    );
+    ServerConfiguration? result = await showDialog(context: context, builder: (context) => dialog);
+    if (result == null) {
+      return;
+    }
+    ServerBloc bloc = context.read();
+    bloc.add(ServerEditedMsg(config, result));
+  }
 }
 
-class AddServer extends StatefulWidget {
+class ServerSettings extends StatefulWidget {
   final void Function(ServerConfiguration)? onDone;
+  final ServerConfiguration? config;
 
-  AddServer({this.onDone});
+  ServerSettings({this.onDone, this.config});
 
   @override
-  _AddServerState createState() => _AddServerState();
+  _ServerSettingsState createState() => _ServerSettingsState();
 }
 
-class _AddServerState extends State<AddServer> {
+class _ServerSettingsState extends State<ServerSettings> {
   final nameController = TextEditingController();
   final ipController = TextEditingController();
   final portController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.config == null) {
+      return;
+    }
+    HttpServerConfiguration config = widget.config! as HttpServerConfiguration; // TODO: this will break once we have local playback
+    this.nameController.text = config.name;
+    this.ipController.text = config.ip;
+    this.portController.text = config.port.toString();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var bloc = context.read<ServerBloc>();
-    return ListView(
-      children: <Widget>[
+    ServerBloc bloc = context.read();
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
         TextFormField(
             controller: nameController,
             decoration: const InputDecoration(labelText: 'Name')),
@@ -76,17 +112,16 @@ class _AddServerState extends State<AddServer> {
                     child: Text('Cancel'),
                     onPressed: () => Navigator.pop(context)),
                 ElevatedButton(
-                    child: Text('Add'),
+                    child: Text(widget.config == null ? 'Add' : 'Save'),
                     onPressed: () {
                       var config = HttpServerConfiguration(
                           name: nameController.value.text,
                           ip: ipController.value.text,
                           port: int.parse(portController.value.text));
-                      bloc.add(ServerAddedMsg(config));
                       if (widget.onDone != null) {
                         widget.onDone!(config);
                       }
-                      Navigator.pop(context);
+                      Navigator.pop(context, config);
                     })
               ],
               mainAxisAlignment: MainAxisAlignment.end,
