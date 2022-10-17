@@ -15,6 +15,7 @@ class TrackListItem extends StatelessWidget {
     ServerBloc bloc = context.read();
     return ListTile(
       title: Text(track.title),
+      subtitle: track.artist != null ? Text(track.artist!.name) : null,
       onTap: () {
         if (onSelect != null) {
           onSelect!();
@@ -25,7 +26,9 @@ class TrackListItem extends StatelessWidget {
       leading: CircleAvatar(
           child: track.coverart == null
               ? Icon(Icons.album)
-              : Coverart(track: track)),
+              : ClipRRect(
+                  borderRadius: const BorderRadius.all(const Radius.circular(2)),
+                  child: Coverart(track: track))),
     );
   }
 }
