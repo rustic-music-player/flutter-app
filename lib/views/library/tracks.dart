@@ -43,8 +43,9 @@ class TrackList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: this.tracks.map<Widget>((t) => TrackListItem(t)).toList(),
+    return ListView.builder(
+      itemCount: tracks.length,
+      itemBuilder: (context, i) => TrackListItem(tracks[i]),
     );
   }
 }

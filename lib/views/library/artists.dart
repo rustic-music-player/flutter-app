@@ -43,13 +43,9 @@ class ArtistList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: this
-          .artists
-          .map<Widget>((a) => ArtistListItem(
-                artist: a,
-              ))
-          .toList(),
+    return ListView.builder(
+      itemCount: artists.length,
+      itemBuilder: (context, i) => ArtistListItem(artist: artists[i]),
     );
   }
 }
@@ -61,7 +57,6 @@ class ArtistListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ServerBloc bloc = context.read();
     return ListTile(
       title: Text(artist.name),
       leading: CircleAvatar(

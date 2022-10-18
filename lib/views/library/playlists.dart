@@ -4,7 +4,7 @@ import 'package:rustic/api/models/playlist.dart';
 import 'package:rustic/state/server_bloc.dart';
 import 'package:rustic/ui/drawer.dart';
 import 'package:rustic/ui/player.dart';
-import 'package:rustic/ui/playlists/playlist-list.dart';
+import 'package:rustic/ui/playlists/playlist-item.dart';
 import 'package:rustic/ui/search-btn.dart';
 
 class PlaylistsView extends StatelessWidget {
@@ -17,6 +17,7 @@ class PlaylistsView extends StatelessWidget {
       return FutureBuilder<List<PlaylistModel>>(
           future: api?.fetchPlaylists(),
           builder: (context, snapshot) {
+            var playlists = snapshot.data ?? [];
             return Scaffold(
                 drawer: RusticDrawer(),
                 appBar: AppBar(
@@ -27,13 +28,12 @@ class PlaylistsView extends StatelessWidget {
                         : PreferredSize(
                             child: LinearProgressIndicator(),
                             preferredSize: Size.fromHeight(4))),
-                body: Column(children: <Widget>[
+                body: Column(children: [
                   Expanded(
-                      child: ListView(children: <Widget>[
-                    PlaylistList(
-                      playlists: snapshot.data ?? [],
-                    )
-                  ])),
+                      child: ListView.builder(
+                        itemCount: playlists.length,
+                        itemBuilder: (context, index) => PlaylistListItem(playlists[index]),
+                      )),
                   RusticPlayerBar()
                 ]));
           });
