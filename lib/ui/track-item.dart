@@ -14,6 +14,8 @@ class TrackListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     ServerBloc bloc = context.read();
     return ListTile(
+      selected: track.playing ?? false,
+      trailing: track.playing == true ? Icon(Icons.music_note) : null,
       title: Text(track.title),
       subtitle: track.artist != null ? Text(track.artist!.name) : null,
       onTap: () {

@@ -19,6 +19,7 @@ class TrackModel {
   final int? duration;
   final Rating? rating;
   final PositionModel? position;
+  final bool? playing;
 
   TrackModel(
       {required this.title,
@@ -29,7 +30,8 @@ class TrackModel {
       this.artist,
       this.album,
       this.rating,
-      this.position});
+      this.position,
+      this.playing});
 
   factory TrackModel.fromJson(Map<String, dynamic> json) =>
       _$TrackModelFromJson(json);

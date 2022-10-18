@@ -24,6 +24,7 @@ TrackModel _$TrackModelFromJson(Map<String, dynamic> json) => TrackModel(
       position: json['position'] == null
           ? null
           : PositionModel.fromJson(json['position'] as Map<String, dynamic>),
+      playing: json['playing'] as bool?,
     );
 
 Map<String, dynamic> _$TrackModelToJson(TrackModel instance) =>
@@ -37,4 +38,5 @@ Map<String, dynamic> _$TrackModelToJson(TrackModel instance) =>
       'duration': instance.duration,
       'rating': instance.rating,
       'position': instance.position,
+      'playing': instance.playing,
     };
