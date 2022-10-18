@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rustic/state/server_bloc.dart';
+import 'package:rustic/views/extensions/extensions.dart';
 import 'package:rustic/views/library/albums.dart';
 import 'package:rustic/views/library/artists.dart';
 import 'package:rustic/views/library/tracks.dart';
@@ -134,7 +135,7 @@ class RusticNavigation extends StatelessWidget {
           icon: Icons.playlist_play),
       Divider(),
       RusticNavigationItem('Providers', '/providers', dense: true),
-      RusticNavigationItem('Extensions', '/extensions', dense: true),
+      RusticNavigationItem('Extensions', ExtensionsView.routeName, dense: true),
     ]);
   }
 }

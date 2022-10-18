@@ -9,6 +9,7 @@ import 'package:rustic/api/api.dart';
 import 'package:rustic/api/http_wrapper.dart';
 import 'package:rustic/api/models/album.dart';
 import 'package:rustic/api/models/artist.dart';
+import 'package:rustic/api/models/extension.dart';
 import 'package:rustic/api/models/open_result.dart';
 import 'package:rustic/api/models/player.dart';
 import 'package:rustic/api/models/playlist.dart';
@@ -238,5 +239,22 @@ class HttpApi implements Api {
     var resultModel = OpenResultModel.fromJson(res);
     log('resolveShareUrl $uri => $resultModel');
     return resultModel;
+  }
+
+  @override
+  Future<List<ExtensionModel>> fetchExtensions() async {
+    var list = await fetchGeneric("extensions");
+
+    return list.map<ExtensionModel>((e) => ExtensionModel.fromJson(e)).toList();
+  }
+
+  @override
+  Future<void> enableExtension(String id) async {
+    await client.post('$apiUrl/extensions/$id/enable');
+  }
+
+  @override
+  Future<void> disableExtension(String id) async {
+    await client.post('$apiUrl/extensions/$id/disable');
   }
 }

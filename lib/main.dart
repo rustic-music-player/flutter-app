@@ -10,6 +10,7 @@ import 'package:rustic/state/provider_bloc.dart';
 import 'package:rustic/state/queue_bloc.dart';
 import 'package:rustic/state/server_bloc.dart';
 import 'package:rustic/state/share_url_bloc.dart';
+import 'package:rustic/views/extensions/extensions.dart';
 import 'package:rustic/views/library/album.dart';
 import 'package:rustic/views/library/albums.dart';
 import 'package:rustic/views/library/artists.dart';
@@ -149,7 +150,8 @@ class _AppShellState extends State<AppShell> {
           SearchPlaylistView.routeName: (context) => SearchPlaylistView(),
           PlayerView.routeName: (context) => PlayerView(),
           QueueView.routeName: (context) => QueueView(),
-          ServersView.routeName: (context) => ServersView()
+          ServersView.routeName: (context) => ServersView(),
+          ExtensionsView.routeName: (context) => ExtensionsView(),
         },
       ),
     );
