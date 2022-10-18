@@ -5,7 +5,7 @@ part 'socket_msg.g.dart';
 @JsonSerializable()
 class SocketMessage {
   @JsonKey(name: 'player_cursor')
-  final String playerCursor;
+  final String? playerCursor;
   final String type;
   final dynamic payload;
 

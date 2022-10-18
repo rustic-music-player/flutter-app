@@ -6,8 +6,7 @@ import 'package:rustic/api/models/playlist.dart';
 import 'package:rustic/bloc_logger.dart';
 import 'package:rustic/notifications.dart';
 import 'package:rustic/state/media_bloc.dart';
-import 'package:rustic/state/provider_bloc.dart';
-import 'package:rustic/state/queue_bloc.dart';
+import 'package:rustic/state/provider.dart';
 import 'package:rustic/state/server_bloc.dart';
 import 'package:rustic/state/share_url_bloc.dart';
 import 'package:rustic/views/extensions/extensions.dart';
@@ -23,7 +22,6 @@ import 'package:rustic/views/player/queue.dart';
 import 'package:rustic/views/search/albums.dart';
 import 'package:rustic/views/search/playlists.dart';
 import 'package:rustic/views/search/search.dart';
-import 'package:rustic/views/search/search_bloc.dart';
 import 'package:rustic/views/servers/servers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,39 +39,13 @@ class RusticApp extends StatelessWidget {
   final NotificationsService notificationsService;
   final SharedPreferences sharedPreferences;
 
-  RusticApp({required this.notificationsService, required this.sharedPreferences});
+  RusticApp(
+      {required this.notificationsService, required this.sharedPreferences});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => ServerBloc(sharedPreferences),
-          ),
-          BlocProvider(create: (BuildContext context) {
-            var bloc = QueueBloc(serverBloc: context.read());
-            bloc.add(FetchQueue());
-            return bloc;
-          }),
-          BlocProvider(create: (BuildContext context) {
-            var bloc = CurrentMediaBloc(serverBloc: context.read());
-            bloc.add(FetchPlayer());
-
-            return bloc;
-          }),
-          BlocProvider(create: (BuildContext context) {
-            var bloc = ProviderBloc(serverBloc: context.read());
-            bloc.add(FetchProviders());
-            return bloc;
-          }),
-          BlocProvider(
-            create: (BuildContext context) => SearchBloc(
-                serverBloc: context.read(), providerBloc: context.read()),
-          ),
-          BlocProvider(
-            create: (context) => ShareUrlBloc(context.read()),
-          ),
-        ],
+    return StateProvider(
+        sharedPreferences: sharedPreferences,
         child: BlocBuilder<ServerBloc, ServerState>(
           builder: (context, state) {
             if (state.current == null) {
@@ -106,7 +78,10 @@ class _AppShellState extends State<AppShell> {
       listenWhen: (previous, next) => previous.track != next.track,
       listener: (context, state) {
         ServerBloc bloc = context.read();
-        this.widget.notificationsService.showNotification(bloc.getApi()!, state);
+        this
+            .widget
+            .notificationsService
+            .showNotification(bloc.getApi()!, state);
       },
       child: MaterialApp(
         title: 'Rustic',
@@ -124,15 +99,21 @@ class _AppShellState extends State<AppShell> {
                     return;
                   }
                   if (state.type == 'album') {
-                    AlbumModel album = AlbumModel(cursor: state.cursor, title: "", tracks: []); // TODO: These defaults shouldn't be required
+                    AlbumModel album = AlbumModel(
+                        cursor: state.cursor,
+                        title: "",
+                        tracks: []); // TODO: These defaults shouldn't be required
                     _navigatorKey.currentState?.pushNamed(AlbumView.routeName,
                         arguments: AlbumViewArguments(album));
                   }
                   if (state.type == 'playlist') {
                     // TODO: load full playlist
-                    PlaylistModel playlist =
-                        PlaylistModel(cursor: state.cursor, title: "", tracks: []); // TODO: These defaults shouldn't be required
-                    _navigatorKey.currentState?.pushNamed(PlaylistView.routeName,
+                    PlaylistModel playlist = PlaylistModel(
+                        cursor: state.cursor,
+                        title: "",
+                        tracks: []); // TODO: These defaults shouldn't be required
+                    _navigatorKey.currentState?.pushNamed(
+                        PlaylistView.routeName,
                         arguments: PlaylistViewArguments(playlist));
                   }
                   // TODO: add support for tracks and artists

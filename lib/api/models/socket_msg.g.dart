@@ -8,7 +8,7 @@ part of 'socket_msg.dart';
 
 SocketMessage _$SocketMessageFromJson(Map<String, dynamic> json) =>
     SocketMessage(
-      playerCursor: json['player_cursor'] as String,
+      playerCursor: json['player_cursor'] as String?,
       type: json['type'] as String,
       payload: json['payload'],
     );
