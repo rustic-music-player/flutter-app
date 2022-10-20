@@ -21,8 +21,8 @@ class ArtistsView extends StatelessWidget {
         body: Column(children: [
           Expanded(
               child: RefreshableList<ArtistLibraryBloc, ArtistModel>(
-                builder: (context, artist) => ArtistListItem(artist),
-              )),
+            builder: (context, artist) => ArtistListItem(artist),
+          )),
           RusticPlayerBar()
         ]));
   }
@@ -36,11 +36,13 @@ class ArtistListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(artist.name),
-      leading: CircleAvatar(
-          child: artist.image == null
-              ? Icon(Icons.person)
-              : Coverart(artist: artist)),
-    );
+        title: Text(artist.name),
+        leading: CircleAvatar(
+            backgroundColor: Colors.black38,
+            child: artist.image == null
+                ? Icon(Icons.person)
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Coverart(artist: artist, height: 48, width: 48))));
   }
 }

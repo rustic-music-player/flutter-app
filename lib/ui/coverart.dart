@@ -9,8 +9,10 @@ class Coverart extends StatelessWidget {
   TrackModel? track;
   AlbumModel? album;
   ArtistModel? artist;
+  double? width;
+  double? height;
 
-  Coverart({this.track, this.album, this.artist, Key? key}) : super(key: key);
+  Coverart({this.track, this.album, this.artist, this.width, this.height, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class Coverart extends StatelessWidget {
       return Container();
     }
 
-    return Image(image: image);
+    return Image(image: image, fit: BoxFit.cover, width: this.width, height: this.height);
   }
 
   String? get coverartUrl {
